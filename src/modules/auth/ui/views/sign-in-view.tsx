@@ -6,7 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertTitle } from "@/components/ui/alert"
-import { OctagonAlertIcon } from "lucide-react"
+import {  OctagonAlertIcon } from "lucide-react"
+import Link from "next/link"
 
 import {
     Form,
@@ -123,8 +124,15 @@ export const SignInView = () => {
                                         type="button"
                                         className='w-full'
                                     >
-                                        Google
+                                        Github
                                     </Button>
+                                </div>
+
+                                <div className='text-center text-sm'>
+                                    Don&apos;t have an account?{" "}
+                                    <Link href="/sign-up" className='underline underline-offset-4'>
+                                        Sign up
+                                    </Link>
                                 </div>
 
                             </div>
@@ -140,6 +148,12 @@ export const SignInView = () => {
                     </div>
                 </CardContent>
             </Card>
+
+            <div className='text-muted-foreground *:[a]:hover:text-primary text-center text-xs 
+             text-balance *:[a]:underline *:[a]:underline-offset-4'>
+                By clicking continue, you agree to our <a href="#">Terms of Service</a> <a href="#">Privacy Policy</a>
+            </div>
+
         </div>
     )
 }
