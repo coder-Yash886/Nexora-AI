@@ -5,7 +5,6 @@ import { z } from "zod"
 import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Input } from "@/components/ui/input"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertTitle } from "@/components/ui/alert"
 import { OctagonAlertIcon } from "lucide-react"
@@ -35,7 +34,7 @@ const formSchema = z.object({
 
 export const SignUpView = () => {
 
-    const router = useRouter();
+
     const [error, setError] = useState<string | null>(null);
     const [pending, setPending] = useState(false);
 
@@ -58,12 +57,13 @@ export const SignUpView = () => {
             {
                 name: data.name,
                 email: data.email,
-                password: data.password
+                password: data.password,
+                callbackURL: "/"
+
             },
             {
                 onSuccess: () => {
                     setPending(false);
-                    router.push("/")
                 },
 
                 onError: ({ error }) => {
@@ -74,6 +74,28 @@ export const SignUpView = () => {
         )
 
     }
+
+    const onSocial = (provider: "github" | "google") => {
+        setError(null);
+        setPending(true);
+
+        authClient.signIn.social(
+            {
+                provider: provider,
+                callbackURL: "/"
+            },
+            {
+                onSuccess: () => {
+                    setPending(false);
+                },
+                onError: ({ error }) => {
+                    setPending(false);
+                    setError(error.message)
+                },
+            }
+        );
+    };
+
 
 
 
@@ -197,19 +219,16 @@ export const SignUpView = () => {
                                 <div className='grid grid-cols-2 gap-4'>
                                     <Button
                                         disabled={pending}
+                                        onClick={() => onSocial("google")}
                                         variant="outline"
                                         type="button"
-                                        className='w-full'
+                                        className='w-full cursor-pointer'
                                     >
                                         Google
                                     </Button>
-                                       <Button
+                                    <Button
                                         disabled={pending}
-                                        onClick={() => {
-                                            authClient.signIn.social({
-                                                provider: "github",
-                                            })
-                                        }}
+                                        onClick={() => onSocial("github")}
                                         variant="outline"
                                         type="button"
                                         className='w-full cursor-pointer'
