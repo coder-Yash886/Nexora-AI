@@ -23,15 +23,15 @@ import {
 import { useForm } from "react-hook-form"
 
 const formSchema = z.object({
-    name: z.string().min(1,{message: "Name is required"}),
+    name: z.string().min(1, { message: "Name is required" }),
     email: z.string().email(),
     password: z.string().min(6, { message: "Password must be at least 6 characters long" }),
-    confirmPassword: z.string().min(1,{message: "Password is required"}),
+    confirmPassword: z.string().min(1, { message: "Password is required" }),
 })
-.refine((data) => data.password === data.confirmPassword, {
-    message: "Password don't match",
-    path: ["confirmPassword"],
-})
+    .refine((data) => data.password === data.confirmPassword, {
+        message: "Password don't match",
+        path: ["confirmPassword"],
+    })
 
 export const SignUpView = () => {
 
@@ -93,7 +93,7 @@ export const SignUpView = () => {
                                         Create your account to continue using Meet.AI
                                     </p>
                                 </div>
-                                 <div className='grid gap-3'>
+                                <div className='grid gap-3'>
                                     <FormField
                                         control={form.control}
                                         name="name"
@@ -150,25 +150,25 @@ export const SignUpView = () => {
                                         )}
                                     />
                                     <div className='grid gap-3'>
-                                    <FormField
-                                        control={form.control}
-                                        name="confirmPassword"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Confirm Password</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        type="password"
-                                                        placeholder='Enter to confirm your password'
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                                        <FormField
+                                            control={form.control}
+                                            name="confirmPassword"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Confirm Password</FormLabel>
+                                                    <FormControl>
+                                                        <Input
+                                                            type="password"
+                                                            placeholder='Enter to confirm your password'
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
                                     </div>
-                              
+
                                 </div>
                                 {
                                     !!error && (
@@ -203,11 +203,16 @@ export const SignUpView = () => {
                                     >
                                         Google
                                     </Button>
-                                    <Button
+                                       <Button
                                         disabled={pending}
+                                        onClick={() => {
+                                            authClient.signIn.social({
+                                                provider: "github",
+                                            })
+                                        }}
                                         variant="outline"
                                         type="button"
-                                        className='w-full'
+                                        className='w-full cursor-pointer'
                                     >
                                         Github
                                     </Button>
