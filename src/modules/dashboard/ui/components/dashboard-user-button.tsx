@@ -10,6 +10,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
+import { GeneratedAvatar } from "@/components/generated-avtar";
 
 
 
@@ -29,7 +30,13 @@ export const DashboardUserButton = () => {
                     <Avatar>
                         <AvatarImage src={data.user.image}/>
                     </Avatar>
-                ): null}
+                ): (
+                    <GeneratedAvatar
+                    seed={data.user.name}
+                    variant="initials"
+                    className="size-9 mr-3"
+                    />
+                )}
             </DropdownMenuTrigger>
         </DropdownMenu>
     )
