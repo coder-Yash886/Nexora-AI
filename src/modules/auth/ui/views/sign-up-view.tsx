@@ -6,6 +6,8 @@ import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
+import { FaGithub, FaGoogle} from "react-icons/fa"
 import { Alert, AlertTitle } from "@/components/ui/alert"
 import { OctagonAlertIcon } from "lucide-react"
 import Link from "next/link"
@@ -21,6 +23,7 @@ import {
 } from "@/components/ui/form"
 import { useForm } from "react-hook-form"
 
+
 const formSchema = z.object({
     name: z.string().min(1, { message: "Name is required" }),
     email: z.string().email(),
@@ -34,7 +37,7 @@ const formSchema = z.object({
 
 export const SignUpView = () => {
 
-
+    const router = useRouter();
     const [error, setError] = useState<string | null>(null);
     const [pending, setPending] = useState(false);
 
@@ -64,6 +67,7 @@ export const SignUpView = () => {
             {
                 onSuccess: () => {
                     setPending(false);
+                    router.push("/")
                 },
 
                 onError: ({ error }) => {
@@ -224,7 +228,7 @@ export const SignUpView = () => {
                                         type="button"
                                         className='w-full cursor-pointer'
                                     >
-                                        Google
+                                        <FaGoogle/>
                                     </Button>
                                     <Button
                                         disabled={pending}
@@ -233,7 +237,7 @@ export const SignUpView = () => {
                                         type="button"
                                         className='w-full cursor-pointer'
                                     >
-                                        Github
+                                        <FaGithub/>
                                     </Button>
                                 </div>
 
