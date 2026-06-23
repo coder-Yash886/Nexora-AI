@@ -1,7 +1,7 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
-import { Button } from "@base-ui/react";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
 export const HomeView = () => {
@@ -17,7 +17,7 @@ export const HomeView = () => {
       <p>Logged in as {session.user.name}</p>
 
       <Button
-        className="w-full bg-black text-white cursor-pointer"
+        className="w-full"
         onClick={() => authClient.signOut({
           fetchOptions: {
             onSuccess: () => router.push("/sign-in")
