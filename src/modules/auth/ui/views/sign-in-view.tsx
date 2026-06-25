@@ -105,7 +105,7 @@ export const SignInView = () => {
                                         Welcome back
                                     </h1>
                                     <p className=' text-muted-foreground text-balance'>
-                                        Login to your account to continue using Meet.AI
+                                        Login to your account to continue using Nexora AI
                                     </p>
                                 </div>
                                 <div className='grid gap-3'>
@@ -206,7 +206,7 @@ export const SignInView = () => {
                     flex-col gap-y-4 items-center justify-center'>
                         <img src="/logo.svg" alt="Image" className="h-[92px] w-[92px]" />
                         <p className="text-2xl font-semibold text-white">
-                            Meet.AI
+                            Nexora AI
                         </p>
                     </div>
                 </CardContent>
