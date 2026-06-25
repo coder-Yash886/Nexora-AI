@@ -1,13 +1,10 @@
 "use client";
-import { trpc } from "@/trpc/client";
-import { useQuery } from "@tanstack/react-query";
 
 export const HomeView = () => {
-  const { data } = trpc.hello.useQuery({ text: "Yash Kumar" });
 
   return (
-    <div className="flex flex-col p-4 gap-y-4">
-      {data?.greeting}
+    <div>
+      Home view
     </div>
   );
 };
