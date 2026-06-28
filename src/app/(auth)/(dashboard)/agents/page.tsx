@@ -19,7 +19,7 @@ const page = async () => {
   const queryClient = getQueryClient();
   void queryClient.prefetchQuery({
     queryKey: [["agents", "getMany"]],
-    queryFn: () => caller.agents.getMany(),
+    queryFn: () => caller.agents.getMany({}),
   });
 
   return (
