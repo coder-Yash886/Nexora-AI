@@ -5,6 +5,7 @@ import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { agentsInsertSchema } from "../schemas";
 import { eq, and, sql, getTableColumns, ilike, desc, count } from "drizzle-orm";
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, MIN_PAGE_SIZE } from "@/constants";
+import { TRPCError } from "@trpc/server";
 
 export const agentsRouter = createTRPCRouter({
   getMany: protectedProcedure
@@ -72,6 +73,11 @@ export const agentsRouter = createTRPCRouter({
             eq(agents.userId, ctx.auth.user.id) 
           )
         );
+
+      if (!existingAgent) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Agent not found" });
+      }
+
       return existingAgent;
     }),
 
