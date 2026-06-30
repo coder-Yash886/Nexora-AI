@@ -2,8 +2,7 @@ import { auth } from "@/lib/auth";
 import { loadSearchParams } from "@/modules/agents/params";
 import { AgentsView } from "@/modules/agents/ui/views/agents-view"
 import { AgentsListHeader } from "@/modules/agents/ui/views/components/agents-list-header";
-import { getQueryClient, caller } from "@/trpc/server"
-import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
+import { HydrateClient, trpc } from "@/trpc/server"
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import type { SearchParams } from "nuqs";
@@ -24,19 +23,14 @@ const page = async ({searchParams}: Props) => {
       redirect("/");
     }
 
-  const queryClient = getQueryClient();
-  void queryClient.prefetchQuery({
-    ...filters,
-    queryKey: [["agents", "getMany"]],
-    queryFn: () => caller.agents.getMany({}),
-  });
+  void trpc.agents.getMany.prefetch(filters);
 
   return (
     <>
      <AgentsListHeader />
-    <HydrationBoundary state={dehydrate(queryClient)}>
+    <HydrateClient>
       <AgentsView />
-    </HydrationBoundary>
+    </HydrateClient>
     </>
   )
 }

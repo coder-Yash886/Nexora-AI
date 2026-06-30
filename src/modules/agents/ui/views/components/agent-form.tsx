@@ -51,6 +51,19 @@ export const AgentForm = ({
     }
   });
 
+  const updateAgent = trpc.agents.update.useMutation({
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: agentsManyKey });
+      if (agentsOneKey) {
+        await queryClient.invalidateQueries({ queryKey: agentsOneKey });
+      }
+      onSuccess?.();
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    }
+  });
+
   const form = useForm<z.infer<typeof agentsInsertSchema>>({
     resolver: zodResolver(agentsInsertSchema),
     defaultValues: {
@@ -60,12 +73,11 @@ export const AgentForm = ({
   });
 
   const isEdit = !!initialValues?.id;
-  const isPending = createAgent.isPending;
+  const isPending = createAgent.isPending || updateAgent.isPending;
 
   const onSubmit = (values: z.infer<typeof agentsInsertSchema>) => {
-    if (isEdit) {
-      // TODO: add update procedure to your tRPC agents router, then wire it up here
-      console.log("TODO: update agent", values);
+    if (isEdit && initialValues?.id) {
+      updateAgent.mutate({ id: initialValues.id, ...values });
     } else {
       createAgent.mutate(values);
     }
