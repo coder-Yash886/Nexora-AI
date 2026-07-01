@@ -64,13 +64,15 @@ export const CommandSelect = ({
         type="button"
         variant="outline"
         className={cn(
-          "h-9 w-full justify-between font-normal px-2",
+          "flex h-9 items-center justify-between gap-2 px-2 font-normal",
           !selectedOption && "text-muted-foreground",
           className,
         )}
       >
-        <div className="truncate">
-          {selectedOption?.children ?? placeholder}
+        <div className="flex min-w-0 flex-1 items-center overflow-hidden">
+          {selectedOption?.children ?? (
+            <span className="truncate">{placeholder}</span>
+          )}
         </div>
         <ChevronsUpDownIcon className="size-4 shrink-0 opacity-50" />
       </Button>

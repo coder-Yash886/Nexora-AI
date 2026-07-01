@@ -4,8 +4,16 @@ import { MeetingsView } from "@/modules/meetings/ui/views/meetings-view";
 import { HydrateClient, trpc } from "@/trpc/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import type { SearchParams } from "nuqs/server";
+import { loadSearchParams } from "@/modules/meetings/params";
 
-const Page = async () => {
+
+interface Props {
+  searchParams: Promise<SearchParams>;
+}
+
+const Page = async ({ searchParams }: Props) => {
+  const filters = await loadSearchParams(searchParams);
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -14,7 +22,9 @@ const Page = async () => {
     redirect("/");
   }
 
-  void trpc.meetings.getMany.prefetch({});
+  void trpc.meetings.getMany.prefetch({
+      ...filters,
+  });
 
   return (
     <>

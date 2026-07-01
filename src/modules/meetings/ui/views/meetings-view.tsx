@@ -6,10 +6,16 @@ import { ErrorState } from "@/components/error-state";
 import { DataTable } from "@/components/data-table";
 import { columns } from "../components/colums";
 import { EmptyState } from "@/components/empty-state";
-
+import { useMeetingsFilters } from "../../hooks/use-meetings-filters";
+import { DataPagination } from "@/modules/agents/ui/views/components/data-pagination";
 
 export const MeetingsView = () => {
-  const { data, isLoading, isError } = trpc.meetings.getMany.useQuery({});
+  const [filters, setFilters] = useMeetingsFilters();
+  const { data, isLoading, isError } = trpc.meetings.getMany.useQuery({
+    ...filters,
+    status: filters.status ?? undefined,
+    agentId: filters.agentId || undefined,
+  });
 
   if (isLoading) {
     return (
@@ -34,6 +40,11 @@ export const MeetingsView = () => {
       <DataTable 
        data={data?.items ?? []}
        columns={columns}
+       />
+       <DataPagination
+         page={filters.page}
+         totalPages={data?.totalPages ?? 1}
+         onPageChange={(page) => setFilters({ page })}
        />
       {(data?.items ?? []).length === 0 && (
         <EmptyState
