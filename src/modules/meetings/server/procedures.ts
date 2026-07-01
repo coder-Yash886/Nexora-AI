@@ -92,4 +92,28 @@ export const meetingsRouter = createTRPCRouter({
 
       return existingMeeting;
     }),
+
+
+    update: protectedProcedure
+        .input(meetingsInsertSchema.extend({ id: z.string() }))
+        .mutation(async ({ input, ctx }) => {
+          const { id, ...values } = input;
+    
+          const [updatedMeeting] = await db
+            .update(meetings)
+            .set(values)
+            .where(
+              and(
+                eq(meetings.id, id),
+                eq(meetings.userId, ctx.auth.user.id),
+              ),
+            )
+            .returning();
+    
+          if (!updatedMeeting) {
+            throw new TRPCError({ code: "NOT_FOUND", message: "Meeting not found" });
+          }
+    
+          return updatedMeeting;
+        }),
 });
