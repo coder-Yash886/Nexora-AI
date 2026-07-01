@@ -3,6 +3,10 @@
 import { trpc } from "@/trpc/client";
 import { LoadingState } from "@/components/loading-state";
 import { ErrorState } from "@/components/error-state";
+import { DataTable } from "@/components/data-table";
+import { columns } from "../components/colums";
+import { EmptyState } from "@/components/empty-state";
+
 
 export const MeetingsView = () => {
   const { data, isLoading, isError } = trpc.meetings.getMany.useQuery({});
@@ -27,16 +31,15 @@ export const MeetingsView = () => {
 
   return (
     <div className="flex-1 pb-4 px-4 md:px-8 flex flex-col gap-y-4">
-      {(data?.items ?? []).length === 0 ? (
-        <p className="text-muted-foreground">No meetings yet.</p>
-      ) : (
-        <ul className="space-y-2">
-          {(data?.items ?? []).map((meeting) => (
-            <li key={meeting.id} className="rounded-lg border bg-white p-4">
-              {meeting.name}
-            </li>
-          ))}
-        </ul>
+      <DataTable 
+       data={data?.items ?? []}
+       columns={columns}
+       />
+      {(data?.items ?? []).length === 0 && (
+        <EmptyState
+          title="Create your first meeting"
+          description="Schedule a meeting to connect with others. Each meeting lets you collaborate, share ideas, and interact with participants in real time."
+        />
       )}
     </div>
   );
