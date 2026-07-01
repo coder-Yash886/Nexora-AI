@@ -39,10 +39,15 @@ export const MeetingForm = ({
   const [openNewAgentDialog, setOpenNewAgentDialog] = useState(false);
   
 
-  const agents = trpc.agents.getMany.useQuery({
-    pageSize: 100,
-    search: agentSearch,
-  });
+  const agents = trpc.agents.getMany.useQuery(
+    {
+      pageSize: 100,
+      search: agentSearch,
+    },
+    {
+      placeholderData: (previousData) => previousData,
+    },
+  );
 
   const meetingsManyKey = getQueryKey(trpc.meetings.getMany, undefined, "query");
   const meetingsOneKey = initialValues?.id
@@ -131,6 +136,7 @@ export const MeetingForm = ({
                   options={(agents.data?.items ?? []).map((agent) => ({
                     id: agent.id,
                     value: agent.id,
+                    keywords: [agent.name],
                     children: (
                       <div className="flex items-center gap-x-2">
                         <GeneratedAvatar
