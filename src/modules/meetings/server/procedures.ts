@@ -238,4 +238,44 @@ export const meetingsRouter = createTRPCRouter({
 
       return removedMeeting;
     }),
+
+  updateStatus: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        status: z.enum(["upcoming", "active", "completed", "processing", "cancelled"]),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { id, status } = input;
+
+      const updateData: {
+        status: typeof status;
+        startedAt?: Date;
+        endedAt?: Date;
+      } = { status };
+
+      if (status === "active") {
+        updateData.startedAt = new Date();
+      } else if (status === "completed") {
+        updateData.endedAt = new Date();
+      }
+
+      const [updatedMeeting] = await db
+        .update(meetings)
+        .set(updateData)
+        .where(
+          and(
+            eq(meetings.id, id),
+            eq(meetings.userId, ctx.auth.user.id),
+          ),
+        )
+        .returning();
+
+      if (!updatedMeeting) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Meeting not found" });
+      }
+
+      return updatedMeeting;
+    }),
 });
