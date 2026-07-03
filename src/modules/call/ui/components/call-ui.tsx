@@ -24,11 +24,16 @@ export const CallUI = ({ meetingId, meetingName }: Props) => {
 
     try {
       await call.join({ create: true });
+      await call.microphone.enable();
       updateStatus.mutate({ id: meetingId, status: "active" });
       setShow("call");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Failed to join call:", error);
-      toast.error(error?.message || "Failed to join the call. Please try again.");
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Failed to join the call. Please try again.";
+      toast.error(message);
     }
   };
 
@@ -39,7 +44,7 @@ export const CallUI = ({ meetingId, meetingName }: Props) => {
       call.endCall();
       updateStatus.mutate({ id: meetingId, status: "completed" });
       setShow("ended");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Failed to leave/end call:", error);
       toast.error("An error occurred while leaving the call.");
     }

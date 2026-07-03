@@ -7,6 +7,7 @@ import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, MIN_PAGE_SIZE } from "@
 import { TRPCError } from "@trpc/server";
 import { meetingsInsertSchema } from "../schemas";
 import { MeetingStatus } from "../types";
+import { connectAgentToMeeting } from "@/lib/connect-agent-to-meeting";
 import { streamVideo } from "@/lib/stream-video";
 import { generateAvatarUri } from "@/lib/avatar";
 
@@ -274,6 +275,12 @@ export const meetingsRouter = createTRPCRouter({
 
       if (!updatedMeeting) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Meeting not found" });
+      }
+
+      if (status === "active") {
+        void connectAgentToMeeting(id).catch((err) => {
+          console.error(`Failed to connect agent to meeting ${id}:`, err);
+        });
       }
 
       return updatedMeeting;
