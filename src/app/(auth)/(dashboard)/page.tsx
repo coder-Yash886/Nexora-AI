@@ -1,5 +1,4 @@
 
-import { HomeView } from "@/modules/home/ui/views/home-view";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -13,7 +12,7 @@ const Page = async () => {
     redirect("/sign-in");
   }
 
-  return <HomeView />;
+  redirect("/meetings");
 };
 
 export default Page;

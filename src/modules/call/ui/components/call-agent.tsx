@@ -88,11 +88,11 @@ export const CallAgent = ({
 
   const handleAgentError = (error: unknown) => {
     console.error("Agent reply failed:", error);
-    const fallback =
+    const message =
       error instanceof Error
         ? error.message
         : "Agent could not reply. Check your Gemini API key.";
-    toast.error(fallback);
+    toast.error(message, { duration: 6000 });
   };
 
   const sendMessage = useCallback(

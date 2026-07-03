@@ -2,10 +2,10 @@ import "server-only";
 
 import { eq, inArray } from "drizzle-orm";
 import JSONL from "jsonl-parse-stringify";
-import { GoogleGenAI } from "@google/genai";
 
 import { db } from "@/db";
 import { agents, meetings, user } from "@/db/schema";
+import { generateGeminiText } from "@/lib/gemini";
 import { streamVideo } from "@/lib/stream-video";
 import { StreamTranscriptItem } from "@/modules/meetings/types";
 
@@ -25,19 +25,6 @@ Example:
 - Main point or interaction shown here
 - Another key insight
 `.trim();
-
-function getGeminiApiKey(): string {
-  const apiKey =
-    process.env.GEMINI_API_KEY ??
-    process.env.GOOGLE_API_KEY ??
-    process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-
-  if (!apiKey) {
-    throw new Error("GEMINI_API_KEY is not set");
-  }
-
-  return apiKey;
-}
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -90,9 +77,7 @@ async function enrichTranscriptWithSpeakers(
 async function generateSummaryFromTranscript(
   transcriptWithSpeakers: Awaited<ReturnType<typeof enrichTranscriptWithSpeakers>>,
 ) {
-  const ai = new GoogleGenAI({ apiKey: getGeminiApiKey() });
-  const result = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
+  return generateGeminiText({
     contents:
       "Summarize the following transcript:\n" +
       JSON.stringify(transcriptWithSpeakers),
@@ -100,13 +85,6 @@ async function generateSummaryFromTranscript(
       systemInstruction: SUMMARY_PROMPT,
     },
   });
-
-  const text = result.text?.trim();
-  if (!text) {
-    throw new Error("Gemini returned an empty summary");
-  }
-
-  return text;
 }
 
 export type ProcessMeetingSummaryResult =

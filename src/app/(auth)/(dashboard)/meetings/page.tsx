@@ -19,7 +19,7 @@ const Page = async ({ searchParams }: Props) => {
   });
 
   if (!session) {
-    redirect("/");
+    redirect("/sign-in");
   }
 
   void trpc.meetings.getMany.prefetch({

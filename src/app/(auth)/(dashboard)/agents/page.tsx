@@ -20,7 +20,7 @@ const page = async ({searchParams}: Props) => {
     });
   
     if (!session) {
-      redirect("/");
+      redirect("/sign-in");
     }
 
   void trpc.agents.getMany.prefetch(filters);

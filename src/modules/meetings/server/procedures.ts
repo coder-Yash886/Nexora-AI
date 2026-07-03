@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { GoogleGenAI } from "@google/genai";
 import { after } from "next/server";
 import { db } from "@/db";
 import { agents, meetings, user } from "@/db/schema";
@@ -11,6 +10,7 @@ import { meetingsInsertSchema } from "../schemas";
 import { MeetingStatus } from "../types";
 import { streamVideo } from "@/lib/stream-video";
 import { generateAvatarUri } from "@/lib/avatar";
+import { generateGeminiText } from "@/lib/gemini";
 import { processMeetingSummaryWithRetry } from "@/lib/process-meeting-summary";
 
 export const meetingsRouter = createTRPCRouter({
@@ -370,18 +370,6 @@ export const meetingsRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const apiKey =
-        process.env.GEMINI_API_KEY ??
-        process.env.GOOGLE_API_KEY ??
-        process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-
-      if (!apiKey) {
-        throw new TRPCError({
-          code: "PRECONDITION_FAILED",
-          message: "GEMINI_API_KEY is not set in .env",
-        });
-      }
-
       const [meeting] = await db
         .select({
           summary: meetings.summary,
@@ -401,9 +389,7 @@ export const meetingsRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Meeting not found" });
       }
 
-      const ai = new GoogleGenAI({ apiKey });
-      const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
+      const reply = await generateGeminiText({
         contents: input.message,
         config: {
           systemInstruction: `You help the user revisit a completed meeting.
@@ -418,14 +404,6 @@ Answer based on the meeting summary. Be concise and helpful.`,
         },
       });
 
-      const reply = response.text?.trim();
-      if (!reply) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Gemini returned an empty response",
-        });
-      }
-
       return { reply };
     }),
 
@@ -437,18 +415,6 @@ Answer based on the meeting summary. Be concise and helpful.`,
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const apiKey =
-        process.env.GEMINI_API_KEY ??
-        process.env.GOOGLE_API_KEY ??
-        process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-
-      if (!apiKey) {
-        throw new TRPCError({
-          code: "PRECONDITION_FAILED",
-          message: "GEMINI_API_KEY is not set in .env",
-        });
-      }
-
       const [meeting] = await db
         .select({
           agentInstructions: agents.instructions,
@@ -467,37 +433,14 @@ Answer based on the meeting summary. Be concise and helpful.`,
         throw new TRPCError({ code: "NOT_FOUND", message: "Meeting not found" });
       }
 
-      const ai = new GoogleGenAI({ apiKey });
-      try {
-        const response = await ai.models.generateContent({
-          model: "gemini-2.5-flash",
-          contents: input.message,
-          config: {
-            systemInstruction: `${meeting.agentInstructions}\n\nReply in one or two short sentences. Be direct and helpful.`,
-          },
-        });
+      const reply = await generateGeminiText({
+        contents: input.message,
+        config: {
+          systemInstruction: `${meeting.agentInstructions}\n\nReply in one or two short sentences. Be direct and helpful.`,
+        },
+      });
 
-        const reply = response.text?.trim();
-        if (!reply) {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Gemini returned an empty response",
-          });
-        }
-
-        return { reply };
-      } catch (error) {
-        const message =
-          error instanceof Error ? error.message : "Gemini request failed";
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: message.includes("429")
-            ? "Gemini API quota exceeded. Wait a minute or use a new API key."
-            : message.includes("API key")
-              ? "Invalid Gemini API key. Check GEMINI_API_KEY in .env"
-              : "Could not get a reply from Gemini. Check your API key.",
-        });
-      }
+      return { reply };
     }),
 
   askAgentVoice: protectedProcedure
@@ -509,18 +452,6 @@ Answer based on the meeting summary. Be concise and helpful.`,
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const apiKey =
-        process.env.GEMINI_API_KEY ??
-        process.env.GOOGLE_API_KEY ??
-        process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-
-      if (!apiKey) {
-        throw new TRPCError({
-          code: "PRECONDITION_FAILED",
-          message: "GEMINI_API_KEY is not set in .env",
-        });
-      }
-
       const [meeting] = await db
         .select({
           agentInstructions: agents.instructions,
@@ -538,10 +469,7 @@ Answer based on the meeting summary. Be concise and helpful.`,
         throw new TRPCError({ code: "NOT_FOUND", message: "Meeting not found" });
       }
 
-      const ai = new GoogleGenAI({ apiKey });
-      try {
-        const response = await ai.models.generateContent({
-          model: "gemini-2.5-flash",
+      const reply = await generateGeminiText({
           contents: [
             {
               inlineData: {
@@ -558,24 +486,6 @@ Answer based on the meeting summary. Be concise and helpful.`,
           },
         });
 
-        const reply = response.text?.trim();
-        if (!reply) {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Gemini returned an empty response",
-          });
-        }
-
-        return { reply };
-      } catch (error) {
-        const message =
-          error instanceof Error ? error.message : "Gemini request failed";
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: message.includes("429")
-            ? "Gemini API quota exceeded. Wait a minute or use a new API key."
-            : "Could not process voice. Try typing your question instead.",
-        });
-      }
+      return { reply };
     }),
 });
