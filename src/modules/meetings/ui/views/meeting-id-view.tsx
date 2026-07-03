@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -14,6 +14,7 @@ import { CancelledState } from "../components/cancelled-state";
 import { ProcessingState } from "../components/processing-state";
 import { UpcomingState } from "../components/upcomming-state";
 import { ActiveState } from "../components/active-state";
+import { CompletedState } from "../components/complete-state";
 
 interface Props {
   meetingId: string;
@@ -25,6 +26,16 @@ export const MeetingIdView = ({ meetingId }: Props) => {
   const [updateMeetingDialogOpen, setUpdateMeetingDialogOpen] = useState(false);
 
   const [data] = trpc.meetings.getOne.useSuspenseQuery({ id: meetingId });
+
+  useEffect(() => {
+    if (data.status !== "processing") return;
+
+    const interval = setInterval(() => {
+      void utils.meetings.getOne.invalidate({ id: meetingId });
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [data.status, meetingId, utils]);
 
   const removeMeeting = trpc.meetings.remove.useMutation({
     onSuccess: async () => {
@@ -47,12 +58,11 @@ export const MeetingIdView = ({ meetingId }: Props) => {
     removeMeeting.mutate({ id: meetingId });
   };
 
-
   const isActive = data.status === "active";
   const isCompleted = data.status === "completed";
   const isUpcoming = data.status === "upcoming";
   const isCancelled = data.status === "cancelled";
-  const isProessing = data.status === "processing";
+  const isProcessing = data.status === "processing";
 
   return (
     <>
@@ -72,10 +82,10 @@ export const MeetingIdView = ({ meetingId }: Props) => {
           onRemove={handleRemove}
         />
         {isCancelled && <CancelledState />}
-        {isCompleted && <div>CompletedState </div>}
+        {isCompleted && <CompletedState data={data} />}
         {isActive && <ActiveState meetingId={meetingId} />}
         {isUpcoming && <UpcomingState meetingId={meetingId} />}
-        {isProessing && <ProcessingState />}
+        {isProcessing && <ProcessingState meetingId={meetingId} />}
       </div>
     </>
   );

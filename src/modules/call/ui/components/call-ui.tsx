@@ -11,9 +11,20 @@ import { CallLobby } from "./call-lobby";
 interface Props {
   meetingId: string;
   meetingName: string;
+  agentName: string;
+  agentImage: string;
+  userName: string;
+  userImage: string;
 };
 
-export const CallUI = ({ meetingId, meetingName }: Props) => {
+export const CallUI = ({
+  meetingId,
+  meetingName,
+  agentName,
+  agentImage,
+  userName,
+  userImage,
+}: Props) => {
   const trpc = useTRPC();
   const updateStatus = trpc.meetings.updateStatus.useMutation();
   const call = useCall();
@@ -42,7 +53,7 @@ export const CallUI = ({ meetingId, meetingName }: Props) => {
 
     try {
       call.endCall();
-      updateStatus.mutate({ id: meetingId, status: "completed" });
+      updateStatus.mutate({ id: meetingId, status: "processing" });
       setShow("ended");
     } catch (error: unknown) {
       console.error("Failed to leave/end call:", error);
@@ -53,8 +64,18 @@ export const CallUI = ({ meetingId, meetingName }: Props) => {
   return (
     <StreamTheme className="h-full">
       {show === "lobby" && <CallLobby onJoin={handleJoin} />}
-      {show === "call" && <CallActive onLeave={handleLeave} meetingName={meetingName} />}
-      {show === "ended" && <CallEnded />}
+      {show === "call" && (
+        <CallActive
+          onLeave={handleLeave}
+          meetingName={meetingName}
+          meetingId={meetingId}
+          agentName={agentName}
+          agentImage={agentImage}
+          userName={userName}
+          userImage={userImage}
+        />
+      )}
+      {show === "ended" && <CallEnded meetingId={meetingId} />}
     </StreamTheme>
   )
 };
