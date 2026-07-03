@@ -1,6 +1,8 @@
 "use client"
 import { ErrorState } from "@/components/error-state";
+import { generateAvatarUri } from "@/lib/avatar";
 import { useTRPC } from "@/trpc/client";
+import { CallProvider } from "../components/call-provider";
 
 interface Props {
   meetingId: string;
@@ -10,8 +12,12 @@ export const CallView = ({ meetingId }: Props) => {
   const trpc = useTRPC();
   const [data] = trpc.meetings.getOne.useSuspenseQuery({ id: meetingId });
 
+  const agentImage = generateAvatarUri({
+    seed: data.agent.name,
+    variant: "botttsNeutral",
+  });
 
-  if(data.status === "upcoming"){
+  if(data.status === "completed" || data.status === "cancelled"){
     return(
         <div className="flex h-screen items-center justify-center">
             <ErrorState 
@@ -23,8 +29,11 @@ export const CallView = ({ meetingId }: Props) => {
   }
 
   return (
-    <div>
-      {JSON.stringify(data, null, 2)}
-    </div>
+    <CallProvider
+      meetingId={meetingId}
+      meetingName={data.name}
+      agentName={data.agent.name}
+      agentImage={agentImage}
+    />
   );
 };

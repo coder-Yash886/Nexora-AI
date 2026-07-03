@@ -1,20 +1,9 @@
-import {createAvatar} from "@dicebear/core";
-import { botttsNeutral, initials } from "@dicebear/collection";
-
 interface Props {
-    seed: string;
-    variant: "botttsNeutral" | "initials";
+  seed: string;
+  variant: "botttsNeutral" | "initials";
 }
 
-
 export const generateAvatarUri = ({ seed, variant }: Props) => {
-  let avatar;
-
-  if (variant === "botttsNeutral") {
-    avatar = createAvatar(botttsNeutral, { seed });
-  } else {
-    avatar = createAvatar(initials, { seed, fontWeight: 500, fontSize: 42 });
-  }
-
-  return avatar.toDataUri();
+  const style = variant === "botttsNeutral" ? "bottts-neutral" : "initials";
+  return `https://api.dicebear.com/9.x/${style}/svg?seed=${encodeURIComponent(seed)}`;
 };

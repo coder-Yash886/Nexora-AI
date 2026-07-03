@@ -1,14 +1,17 @@
 import { z } from "zod";
+import { GoogleGenAI } from "@google/genai";
+import { after } from "next/server";
 import { db } from "@/db";
-import { agents, meetings } from "@/db/schema";
+import { agents, meetings, user } from "@/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
-import { eq, and, getTableColumns, ilike, desc, count, sql } from "drizzle-orm";
+import { eq, and, getTableColumns, ilike, desc, count, sql, inArray } from "drizzle-orm";
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, MIN_PAGE_SIZE } from "@/constants";
 import { TRPCError } from "@trpc/server";
 import { meetingsInsertSchema } from "../schemas";
 import { MeetingStatus } from "../types";
 import { streamVideo } from "@/lib/stream-video";
 import { generateAvatarUri } from "@/lib/avatar";
+import { processMeetingSummaryWithRetry } from "@/lib/process-meeting-summary";
 
 export const meetingsRouter = createTRPCRouter({
 
@@ -237,5 +240,342 @@ export const meetingsRouter = createTRPCRouter({
       }
 
       return removedMeeting;
+    }),
+
+  updateStatus: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        status: z.enum(["upcoming", "active", "completed", "processing", "cancelled"]),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { id, status } = input;
+
+      const updateData: {
+        status: typeof status;
+        startedAt?: Date;
+        endedAt?: Date;
+      } = { status };
+
+      if (status === "active") {
+        updateData.startedAt = new Date();
+      } else if (status === "processing" || status === "completed") {
+        updateData.endedAt = new Date();
+      }
+
+      const [updatedMeeting] = await db
+        .update(meetings)
+        .set(updateData)
+        .where(
+          and(
+            eq(meetings.id, id),
+            eq(meetings.userId, ctx.auth.user.id),
+          ),
+        )
+        .returning();
+
+      if (!updatedMeeting) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Meeting not found" });
+      }
+
+      if (status === "processing") {
+        after(async () => {
+          try {
+            await processMeetingSummaryWithRetry(id, {
+              maxAttempts: 18,
+              delayMs: 10000,
+            });
+          } catch (error) {
+            console.error("Background meeting summary failed:", error);
+          }
+        });
+      }
+
+      return updatedMeeting;
+    }),
+
+  generateSummary: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const [existingMeeting] = await db
+        .select({ id: meetings.id })
+        .from(meetings)
+        .where(
+          and(
+            eq(meetings.id, input.id),
+            eq(meetings.userId, ctx.auth.user.id),
+          ),
+        );
+
+      if (!existingMeeting) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Meeting not found" });
+      }
+
+      return processMeetingSummaryWithRetry(input.id, {
+        maxAttempts: 12,
+        delayMs: 5000,
+      });
+    }),
+
+  getTranscript: protectedProcedure
+    .input(z.object({ meetingId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const [meeting] = await db
+        .select({ transcriptUrl: meetings.transcriptUrl })
+        .from(meetings)
+        .where(
+          and(
+            eq(meetings.id, input.meetingId),
+            eq(meetings.userId, ctx.auth.user.id),
+          ),
+        );
+
+      if (!meeting?.transcriptUrl) {
+        return [];
+      }
+
+      const JSONL = (await import("jsonl-parse-stringify")).default;
+      const response = await fetch(meeting.transcriptUrl);
+      const text = await response.text();
+      const items = JSONL.parse<import("../types").StreamTranscriptItem>(text);
+
+      const speakerIds = [...new Set(items.map((item) => item.speaker_id))];
+
+      const userSpeakers = await db
+        .select({ id: user.id, name: user.name })
+        .from(user)
+        .where(inArray(user.id, speakerIds));
+
+      const agentSpeakers = await db
+        .select({ id: agents.id, name: agents.name })
+        .from(agents)
+        .where(inArray(agents.id, speakerIds));
+
+      const speakers = [...userSpeakers, ...agentSpeakers];
+
+      return items.map((item) => ({
+        ...item,
+        speakerName:
+          speakers.find((speaker) => speaker.id === item.speaker_id)?.name ??
+          "Unknown",
+      }));
+    }),
+
+  askMeetingAI: protectedProcedure
+    .input(
+      z.object({
+        meetingId: z.string(),
+        message: z.string().min(1),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const apiKey =
+        process.env.GEMINI_API_KEY ??
+        process.env.GOOGLE_API_KEY ??
+        process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+
+      if (!apiKey) {
+        throw new TRPCError({
+          code: "PRECONDITION_FAILED",
+          message: "GEMINI_API_KEY is not set in .env",
+        });
+      }
+
+      const [meeting] = await db
+        .select({
+          summary: meetings.summary,
+          agentInstructions: agents.instructions,
+        })
+        .from(meetings)
+        .innerJoin(agents, eq(meetings.agentId, agents.id))
+        .where(
+          and(
+            eq(meetings.id, input.meetingId),
+            eq(meetings.userId, ctx.auth.user.id),
+            eq(meetings.status, "completed"),
+          ),
+        );
+
+      if (!meeting) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Meeting not found" });
+      }
+
+      const ai = new GoogleGenAI({ apiKey });
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: input.message,
+        config: {
+          systemInstruction: `You help the user revisit a completed meeting.
+
+Meeting summary:
+${meeting.summary ?? "No summary available."}
+
+Agent instructions from the live session:
+${meeting.agentInstructions}
+
+Answer based on the meeting summary. Be concise and helpful.`,
+        },
+      });
+
+      const reply = response.text?.trim();
+      if (!reply) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Gemini returned an empty response",
+        });
+      }
+
+      return { reply };
+    }),
+
+  askAgent: protectedProcedure
+    .input(
+      z.object({
+        meetingId: z.string(),
+        message: z.string().min(1),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const apiKey =
+        process.env.GEMINI_API_KEY ??
+        process.env.GOOGLE_API_KEY ??
+        process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+
+      if (!apiKey) {
+        throw new TRPCError({
+          code: "PRECONDITION_FAILED",
+          message: "GEMINI_API_KEY is not set in .env",
+        });
+      }
+
+      const [meeting] = await db
+        .select({
+          agentInstructions: agents.instructions,
+          agentName: agents.name,
+        })
+        .from(meetings)
+        .innerJoin(agents, eq(meetings.agentId, agents.id))
+        .where(
+          and(
+            eq(meetings.id, input.meetingId),
+            eq(meetings.userId, ctx.auth.user.id),
+          ),
+        );
+
+      if (!meeting) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Meeting not found" });
+      }
+
+      const ai = new GoogleGenAI({ apiKey });
+      try {
+        const response = await ai.models.generateContent({
+          model: "gemini-2.5-flash",
+          contents: input.message,
+          config: {
+            systemInstruction: `${meeting.agentInstructions}\n\nReply in one or two short sentences. Be direct and helpful.`,
+          },
+        });
+
+        const reply = response.text?.trim();
+        if (!reply) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Gemini returned an empty response",
+          });
+        }
+
+        return { reply };
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Gemini request failed";
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: message.includes("429")
+            ? "Gemini API quota exceeded. Wait a minute or use a new API key."
+            : message.includes("API key")
+              ? "Invalid Gemini API key. Check GEMINI_API_KEY in .env"
+              : "Could not get a reply from Gemini. Check your API key.",
+        });
+      }
+    }),
+
+  askAgentVoice: protectedProcedure
+    .input(
+      z.object({
+        meetingId: z.string(),
+        audioBase64: z.string().min(1),
+        mimeType: z.string().default("audio/webm"),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const apiKey =
+        process.env.GEMINI_API_KEY ??
+        process.env.GOOGLE_API_KEY ??
+        process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+
+      if (!apiKey) {
+        throw new TRPCError({
+          code: "PRECONDITION_FAILED",
+          message: "GEMINI_API_KEY is not set in .env",
+        });
+      }
+
+      const [meeting] = await db
+        .select({
+          agentInstructions: agents.instructions,
+        })
+        .from(meetings)
+        .innerJoin(agents, eq(meetings.agentId, agents.id))
+        .where(
+          and(
+            eq(meetings.id, input.meetingId),
+            eq(meetings.userId, ctx.auth.user.id),
+          ),
+        );
+
+      if (!meeting) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Meeting not found" });
+      }
+
+      const ai = new GoogleGenAI({ apiKey });
+      try {
+        const response = await ai.models.generateContent({
+          model: "gemini-2.5-flash",
+          contents: [
+            {
+              inlineData: {
+                mimeType: input.mimeType,
+                data: input.audioBase64,
+              },
+            },
+            {
+              text: "Listen to the user's voice message, understand their question, and answer it.",
+            },
+          ],
+          config: {
+            systemInstruction: `${meeting.agentInstructions}\n\nReply in one or two short sentences. Be direct and helpful.`,
+          },
+        });
+
+        const reply = response.text?.trim();
+        if (!reply) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Gemini returned an empty response",
+          });
+        }
+
+        return { reply };
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Gemini request failed";
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: message.includes("429")
+            ? "Gemini API quota exceeded. Wait a minute or use a new API key."
+            : "Could not process voice. Try typing your question instead.",
+        });
+      }
     }),
 });
