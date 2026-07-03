@@ -3,7 +3,14 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/db"; // your drizzle instance
 import * as schema from "@/db/schema";
 
+const baseURL =
+  process.env.BETTER_AUTH_URL ??
+  process.env.NEXT_PUBLIC_APP_URL ??
+  "http://localhost:3000";
+
 export const auth = betterAuth({
+  baseURL,
+  trustedOrigins: [baseURL],
 
   socialProviders: {
         github: { 
