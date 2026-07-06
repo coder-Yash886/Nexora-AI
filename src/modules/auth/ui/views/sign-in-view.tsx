@@ -49,7 +49,7 @@ export const SignInView = () => {
 
         authClient.signIn.email(
             {
-                email: data.email,
+                email: data.email.trim().toLowerCase(),
                 password: data.password,
                 callbackURL: "/"
 
@@ -60,9 +60,46 @@ export const SignInView = () => {
                     router.push("/");
                 },
 
-                onError: ({ error }) => {
+                onError: async ({ error }) => {
                     setPending(false);
-                    setError(error.message)
+
+                    try {
+                        const response = await fetch("/api/auth/account-hint", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ email: data.email.trim().toLowerCase() }),
+                        });
+
+                        const hint = await response.json();
+
+                        if (hint.hint === "oauth_only") {
+                            const providerLabel = hint.providers?.includes("google")
+                                ? "Google"
+                                : hint.providers?.includes("github")
+                                  ? "GitHub"
+                                  : "social login";
+                            setError(
+                                `This email uses ${providerLabel} sign-in. Use the ${providerLabel} button above, or click Forgot password to set an email password.`,
+                            );
+                            return;
+                        }
+
+                        if (hint.hint === "no_account") {
+                            setError("No account found with this email. Please sign up first.");
+                            return;
+                        }
+
+                        if (hint.hint === "no_password") {
+                            setError(
+                                "No email password on this account. Use Forgot password to set one, or sign in with Google/GitHub.",
+                            );
+                            return;
+                        }
+                    } catch {
+                        // fall through to default error
+                    }
+
+                    setError(error.message);
                 }
             }
         )
@@ -145,6 +182,11 @@ export const SignInView = () => {
                                             </FormItem>
                                         )}
                                     />
+                                </div>
+                                <div className="text-right text-sm">
+                                    <Link href="/forgot-password" className="underline underline-offset-4">
+                                        Forgot password?
+                                    </Link>
                                 </div>
                                 {
                                     !!error && (

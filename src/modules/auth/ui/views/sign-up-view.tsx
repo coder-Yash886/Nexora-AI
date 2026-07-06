@@ -59,7 +59,7 @@ export const SignUpView = () => {
         authClient.signUp.email(
             {
                 name: data.name,
-                email: data.email,
+                email: data.email.trim().toLowerCase(),
                 password: data.password,
                 callbackURL: "/"
 
@@ -70,8 +70,19 @@ export const SignUpView = () => {
                     router.push("/")
                 },
 
-                onError: ({ error }) => {
+                onError: async ({ error }) => {
                     setPending(false);
+
+                    if (
+                        error.message.toLowerCase().includes("already") ||
+                        error.message.toLowerCase().includes("exists")
+                    ) {
+                        setError(
+                            "An account with this email already exists. Sign in with Google/GitHub, or use Forgot password to set an email password.",
+                        );
+                        return;
+                    }
+
                     setError(error.message)
                 }
             }

@@ -7,6 +7,7 @@ import {
   getGithubRedirectURI,
   getGoogleRedirectURI,
 } from "@/lib/auth-url";
+import { sendEmail } from "@/lib/send-email";
 
 const baseURL = getAuthBaseURL();
 
@@ -21,6 +22,7 @@ const trustedOrigins = [
 );
 
 export const auth = betterAuth({
+  secret: process.env.BETTER_AUTH_SECRET,
   baseURL,
   trustedOrigins,
 
@@ -39,6 +41,15 @@ export const auth = betterAuth({
 
   emailAndPassword: {
     enabled: true,
+    autoSignIn: true,
+    minPasswordLength: 6,
+    sendResetPassword: async ({ user, url }) => {
+      void sendEmail({
+        to: user.email,
+        subject: "Reset your Nexora AI password",
+        text: `Click the link to reset your password:\n\n${url}\n\nIf you signed up with Google/GitHub, this link lets you add an email password to the same account.`,
+      });
+    },
   },
 
   database: drizzleAdapter(db, {
