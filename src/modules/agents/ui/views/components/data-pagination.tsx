@@ -15,11 +15,11 @@ export const DataPagination = ({
   const safePage = Math.min(Math.max(page, 1), safeTotalPages);
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex-1 text-sm text-muted-foreground">
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex-1 text-sm text-muted-foreground text-center sm:text-left">
         Page {safePage} of {safeTotalPages}
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center justify-center gap-2 py-1 sm:justify-end sm:py-4">
         <Button
           disabled={safePage <= 1}
           variant="outline"

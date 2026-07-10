@@ -210,13 +210,13 @@ export const CallAgent = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className="mx-auto flex w-full max-w-3xl gap-2 rounded-full bg-[#101213] px-3 py-2"
+      className="mx-auto flex w-full min-w-0 max-w-3xl gap-2 rounded-full bg-[#101213] px-2 py-2 sm:px-3"
     >
       <Input
         value={message}
         onChange={(event) => setMessage(event.target.value)}
-        placeholder='Ask the agent... e.g. "What is 2 plus 2?"'
-        className="border-0 bg-transparent text-white placeholder:text-white/40 focus-visible:ring-0"
+        placeholder='Ask the agent...'
+        className="min-w-0 border-0 bg-transparent text-white placeholder:text-white/40 focus-visible:ring-0"
         disabled={isBusy}
       />
       <Button

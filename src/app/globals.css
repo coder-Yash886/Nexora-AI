@@ -132,3 +132,27 @@
     cursor: pointer;
   }
 }
+
+.call-lobby-preview .str-video__preview-container,
+.call-lobby-preview .str-video__preview,
+.call-lobby-preview .str-video__participant-view {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+
+/* Stream video preview — fit mobile screens */
+.str-video__preview-container,
+.str-video__participant-view,
+.str-video__video-preview-container,
+.str-video__preview,
+.str-video__video-preview {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.str-video__preview-container {
+  aspect-ratio: 16 / 9;
+}

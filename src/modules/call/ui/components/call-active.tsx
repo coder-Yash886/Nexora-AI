@@ -36,18 +36,18 @@ export const CallActive = ({
   const isThinking = agentStatus === "Thinking...";
 
   return (
-    <div className="flex h-full flex-col bg-black text-white">
-      <header className="flex items-center gap-3 px-4 py-4">
+    <div className="flex h-dvh min-h-0 flex-col bg-black text-white">
+      <header className="flex min-w-0 items-center gap-3 px-3 py-3 sm:px-4 sm:py-4">
         <Link
           href="/"
           className="flex items-center justify-center rounded-full bg-white/10 p-1.5"
         >
           <Image src="/logo.svg" width={22} height={22} alt="Logo" />
         </Link>
-        <h4 className="text-base font-medium">{meetingName}</h4>
+        <h4 className="min-w-0 truncate text-base font-medium">{meetingName}</h4>
       </header>
 
-      <div className="flex flex-1 flex-col items-center justify-center gap-4 px-4 pb-2">
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 px-3 pb-2 sm:gap-4 sm:px-4">
         <CallParticipantFrame
           name={agentName}
           image={agentImage}
@@ -68,7 +68,7 @@ export const CallActive = ({
         />
       </div>
 
-      <div className="space-y-3 px-4 pb-3">
+      <div className="space-y-3 px-3 pb-3 sm:px-4">
         <p className="text-center text-xs text-white/50">{agentStatus}</p>
         <CallAgent
           meetingId={meetingId}
@@ -78,7 +78,7 @@ export const CallActive = ({
         />
       </div>
 
-      <div className="bg-[#101213] px-4 py-3">
+      <div className="bg-[#101213] px-3 py-3 sm:px-4">
         <CallControls onLeave={onLeave} />
       </div>
     </div>

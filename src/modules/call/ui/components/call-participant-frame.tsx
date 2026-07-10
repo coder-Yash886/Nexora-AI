@@ -42,7 +42,7 @@ export const CallParticipantFrame = ({
     <div
       className={cn(
         "relative overflow-hidden rounded-xl bg-[#0d0f10] border border-[#2d52ff]/40 shadow-lg",
-        isLarge ? "w-full max-w-3xl aspect-video" : "w-56 aspect-video",
+        isLarge ? "w-full max-w-3xl aspect-video" : "w-full max-w-56 aspect-video",
       )}
     >
       {isAgent && isLarge ? (
@@ -74,8 +74,8 @@ export const CallParticipantFrame = ({
       </div>
 
       {subtitle && isLarge ? (
-        <div className="absolute inset-x-0 bottom-14 px-6">
-          <p className="mx-auto max-w-lg rounded-lg bg-black/50 px-4 py-2 text-center text-sm text-white/90 backdrop-blur-sm">
+        <div className="absolute inset-x-0 bottom-14 px-3 sm:px-6">
+          <p className="mx-auto max-w-lg rounded-lg bg-black/50 px-3 py-2 text-center text-xs text-white/90 backdrop-blur-sm sm:px-4 sm:text-sm">
             {subtitle}
           </p>
         </div>

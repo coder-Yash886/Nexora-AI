@@ -5,6 +5,7 @@ import { LoadingState } from "@/components/loading-state";
 import { ErrorState } from "@/components/error-state";
 import { DataTable } from "@/components/data-table";
 import { columns } from "../components/colums";
+import { MeetingsMobileList } from "../components/meetings-mobile-list";
 import { EmptyState } from "@/components/empty-state";
 import { useMeetingsFilters } from "../../hooks/use-meetings-filters";
 import { DataPagination } from "@/modules/agents/ui/views/components/data-pagination";
@@ -38,13 +39,21 @@ export const MeetingsView = () => {
   }
 
   return (
-    <div className="flex-1 pb-4 px-4 md:px-8 flex flex-col gap-y-4">
-      <DataTable 
-       data={data?.items ?? []}
-       columns={columns}
-       onRowClick={(row) => router.push(`/meetings/${row.id}`)}
-       />
-       <DataPagination
+    <div className="flex min-w-0 w-full max-w-full flex-1 flex-col gap-y-4 px-4 pb-4 md:px-8">
+      <MeetingsMobileList
+        items={data?.items ?? []}
+        onSelect={(id) => router.push(`/meetings/${id}`)}
+      />
+
+      <div className="hidden w-full min-w-0 md:block">
+        <DataTable
+          data={data?.items ?? []}
+          columns={columns}
+          onRowClick={(row) => router.push(`/meetings/${row.id}`)}
+        />
+      </div>
+
+      <DataPagination
          page={filters.page}
          totalPages={data?.totalPages ?? 1}
          onPageChange={(page) => setFilters({ page })}

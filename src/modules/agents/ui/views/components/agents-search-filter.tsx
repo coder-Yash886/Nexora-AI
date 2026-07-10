@@ -8,10 +8,10 @@ export const AgentsSearchFilter =() => {
     const [filters,setFilters] = useAgentsFilters();
 
     return(
-        <div className="relative">
+        <div className="relative w-full">
             <Input 
                 placeholder="Filter by name"
-                className="h-9 bg-white w-[200px] pl-7"
+                className="h-9 w-full bg-white pl-7"
                 value={filters.search}
                 onChange={(e) => setFilters({ search: e.target.value, page: DEFAULT_PAGE })}
             />

@@ -57,32 +57,35 @@ export const CallLobby = ({ onJoin }: Props) => {
   const hasBrowserMediaPermission = hasCameraPermission && hasMicPermission;
 
   return (
-    <div className="flex flex-col items-center justify-center h-full bg-radial from-sidebar-accent to-sidebar">
-      <div className="py-4 px-8 flex flex-1 items-center justify-center">
-        <div className="flex flex-col items-center justify-center gap-y-6 bg-background rounded-lg p-10 shadow-sm">
-          <div className="flex flex-col gap-y-2 text-center">
+    <div className="flex h-dvh min-h-0 w-full max-w-full flex-col items-center justify-center overflow-x-hidden bg-radial from-sidebar-accent to-sidebar p-3 sm:p-4">
+      <div className="flex w-full max-w-full min-w-0 flex-1 items-center justify-center py-2 sm:py-4">
+        <div className="box-border flex w-full max-w-lg min-w-0 flex-col items-center justify-center gap-y-5 overflow-hidden rounded-lg bg-background p-4 shadow-sm sm:max-w-2xl sm:p-8">
+          <div className="flex w-full flex-col gap-y-2 text-center">
             <h6 className="text-lg font-medium">Ready to join?</h6>
             <p className="text-sm">Set up your call before joining</p>
           </div>
-          <VideoPreview
-            DisabledVideoPreview={
-              hasBrowserMediaPermission
-                ? DisabledVideoPreview
-                : AllowBrowserPermissions 
-            }
-          />
-          <div className="flex gap-x-2">
+          <div className="call-lobby-preview w-full max-w-full min-w-0 overflow-hidden rounded-md">
+            <VideoPreview
+              DisabledVideoPreview={
+                hasBrowserMediaPermission
+                  ? DisabledVideoPreview
+                  : AllowBrowserPermissions 
+              }
+            />
+          </div>
+          <div className="flex w-full flex-wrap justify-center gap-2">
             <ToggleAudioPreviewButton />
             <ToggleVideoPreviewButton />
           </div>
-          <div className="flex gap-x-2 justify-between w-full">
-            <Button asChild variant="ghost">
+          <div className="flex w-full flex-col gap-2">
+            <Button asChild variant="ghost" className="w-full">
               <Link href="/meetings">
                 Cancel
               </Link>
             </Button>
             <Button
               onClick={onJoin}
+              className="w-full"
             >
               <LogInIcon />
               Join Call

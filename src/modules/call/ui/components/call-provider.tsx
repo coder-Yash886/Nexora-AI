@@ -19,7 +19,7 @@ export const CallProvider = ({ meetingId, meetingName, agentName, agentImage }: 
 
   if (!data || isPending) {
     return (
-      <div className="flex h-screen items-center justify-center bg-radial from-sidebar-accent to-sidebar">
+      <div className="flex h-dvh min-h-0 items-center justify-center bg-radial from-sidebar-accent to-sidebar">
         <LoaderIcon className="size-6 animate-spin text-white" />
       </div>
     );

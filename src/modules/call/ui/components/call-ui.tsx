@@ -62,7 +62,7 @@ export const CallUI = ({
   };
 
   return (
-    <StreamTheme className="h-full">
+    <StreamTheme className="h-dvh min-h-0 w-full max-w-full overflow-x-hidden">
       {show === "lobby" && <CallLobby onJoin={handleJoin} />}
       {show === "call" && (
         <CallActive

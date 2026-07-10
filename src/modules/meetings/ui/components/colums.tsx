@@ -19,7 +19,7 @@ import {format} from "date-fns"
 import humanizeDuration from "humanize-duration"
 
 
-function formatDuration(seconds: number){
+export function formatDuration(seconds: number){
     return humanizeDuration(seconds * 1000,{
         largest: 1,
         round: true,
@@ -28,7 +28,7 @@ function formatDuration(seconds: number){
     })
 }
 
-const statusIconMap ={
+export const statusIconMap ={
     upcoming: ClockArrowUpIcon,
     active: LoaderIcon,
     completed: CircleCheckIcon,
@@ -37,7 +37,7 @@ const statusIconMap ={
 }
 
 
-const statusColorMap = {
+export const statusColorMap = {
     upcoming:"bg-yellow-500/20 text-yellow-800 border-yellow-800/5",
     active: "bg-blue-500/20 text-blue-800 border-blue-800/5",
     completed: "bg-emerald-500/20 text-emerald-800 border-emerald-800/5",

@@ -74,7 +74,7 @@ export const MeetingIdView = ({ meetingId }: Props) => {
           initialValues={data}
         />
       )}
-      <div className="flex-1 px-4 md:px-8 py-4 flex flex-col gap-y-4">
+      <div className="flex min-w-0 flex-1 flex-col gap-y-4 px-4 py-4 md:px-8">
         <MeetingIdViewHeader
           meetingId={meetingId}
           meetingName={data?.name || ""}

@@ -23,7 +23,7 @@ export const AgentIdFilter = () => {
 
   return (
     <CommandSelect
-      className="h-9 w-[160px] shrink-0 bg-white shadow-xs"
+      className="h-9 w-full bg-white shadow-xs"
       placeholder="Agent"
       options={(data?.items ?? []).map((agent) => ({
         id: agent.id,

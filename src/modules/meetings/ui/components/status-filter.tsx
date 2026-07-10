@@ -79,7 +79,7 @@ export const StatusFilter = () => {
     return (
         <CommandSelect
             placeholder="Status"
-            className="h-9 w-[160px] shrink-0 bg-white shadow-xs"
+            className="h-9 w-full bg-white shadow-xs"
             options={options}
             onSelect={(value) => setFilters({status: value as MeetingStatus})}
             value={filters.status ?? ""}

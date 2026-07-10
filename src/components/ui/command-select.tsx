@@ -58,13 +58,13 @@ export const CommandSelect = ({
   };
 
   return (
-    <>
+    <div className="w-full">
       <Button
         onClick={() => setOpen(true)}
         type="button"
         variant="outline"
         className={cn(
-          "flex h-9 items-center justify-between gap-2 px-2 font-normal",
+          "flex h-9 w-full items-center justify-between gap-2 px-2 font-normal",
           !selectedOption && "text-muted-foreground",
           className,
         )}
@@ -107,6 +107,6 @@ export const CommandSelect = ({
           ))}
         </CommandList>
       </CommandResponsiveDialog>
-    </>
+    </div>
   );
 };

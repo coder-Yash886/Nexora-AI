@@ -32,8 +32,8 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div className="overflow-hidden rounded-lg border w-full">  {/* ← added w-full */}
-      <Table className="w-full">  {/* ← added w-full */}
+    <div className="w-full overflow-x-auto rounded-lg border">
+      <Table className="min-w-[680px] w-full">
         <TableHeader>  {/* ← was missing */}
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -57,7 +57,7 @@ export function DataTable<TData, TValue>({
                 className="cursor-pointer"
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell className="text-sm p-4" key={cell.id}>
+                  <TableCell className="p-2 text-sm sm:p-4" key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

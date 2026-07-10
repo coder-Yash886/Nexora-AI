@@ -36,19 +36,19 @@ export const AgentIdViewHeader = ({
   onRemove,
 }: Props) => {
   return (
-    <div className="flex items-center justify-between">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild className="font-medium text-xl">
+    <div className="flex min-w-0 items-center justify-between gap-2">
+      <Breadcrumb className="min-w-0">
+        <BreadcrumbList className="flex-nowrap">
+          <BreadcrumbItem className="min-w-0">
+            <BreadcrumbLink asChild className="truncate font-medium text-base sm:text-xl">
               <Link href="/agents">My Agents</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
-          <BreadcrumbSeparator className="text-foreground text-xl font-medium [&>svg]:size-4">
+          <BreadcrumbSeparator className="text-foreground text-base font-medium sm:text-xl [&>svg]:size-4">
             <ChevronRightIcon />
           </BreadcrumbSeparator>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild className="font-medium text-xl text-foreground">
+          <BreadcrumbItem className="min-w-0">
+            <BreadcrumbLink asChild className="truncate font-medium text-base text-foreground sm:text-xl">
               <Link href={`/agents/${agentId}`}>{agentName}</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
