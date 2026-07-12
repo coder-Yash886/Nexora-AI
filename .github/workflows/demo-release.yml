@@ -1,0 +1,28 @@
+name: Demo Video Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "public/demo/nexora-ai-demo-final.mp4"
+      - ".github/workflows/demo-release.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  upload-demo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Upload demo video to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: demo-assets
+          name: Demo Assets
+          body: Demo video for README embed
+          files: public/demo/nexora-ai-demo-final.mp4
+          overwrite_files: true
+          make_latest: false

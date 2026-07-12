@@ -29,7 +29,14 @@
 
 Experience Nexora AI in action:
 
-https://nexora-ai-1qwb.vercel.app/demo/nexora-ai-demo-final.mp4
+<p align="center">
+  <video
+    src="https://github.com/coder-Yash886/Meet-Ai/releases/download/demo-assets/nexora-ai-demo-final.mp4"
+    controls
+    playsinline
+    width="720">
+  </video>
+</p>
 
 ---
 
