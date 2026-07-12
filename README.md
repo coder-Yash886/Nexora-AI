@@ -29,7 +29,7 @@
 
 Experience Nexora AI in action:
 
-public/demo/nexora-ai-demo-final.mp4
+https://nexora-ai-1qwb.vercel.app/demo/nexora-ai-demo-final.mp4
 
 ---
 
