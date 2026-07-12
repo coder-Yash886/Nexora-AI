@@ -29,14 +29,7 @@
 
 Experience Nexora AI in action:
 
-<p align="center">
-  <video
-    src="https://github.com/coder-Yash886/Meet-Ai/releases/download/demo-assets/nexora-ai-demo-final.mp4"
-    controls
-    playsinline
-    width="720">
-  </video>
-</p>
+https://github.com/coder-Yash886/Nexora-AI/releases/download/demo-assets/nexora-ai-demo-final.mp4
 
 ---
 
@@ -267,4 +260,5 @@ Distributed under the **MIT License**. See `LICENSE` for more information.
 
 <p align="center">
   Made with 💪 by <a href="https://github.com/coder-Yash886">Yash Kumar</a>
+  Twi
 </p>
