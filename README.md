@@ -1,290 +1,265 @@
-# Nexora AI
+<p align="center">
+  <img src="public/logo.svg" alt="Nexora AI Logo" width="80" height="80" />
+</p>
 
-**AI-powered video meeting platform** — create custom AI agents, join live video calls, and get automatic meeting summaries, transcripts, and recordings.
+<h1 align="center">Nexora AI</h1>
 
-**Live:** [https://nexora-ai-1qwb.vercel.app](https://nexora-ai-1qwb.vercel.app)
+<p align="center">
+  <strong>Your AI-Powered Video Meeting Platform</strong>
+</p>
 
----
+<p align="center">
+  <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js" alt="Next.js" /></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript" alt="TypeScript" /></a>
+  <a href="https://trpc.io/"><img src="https://img.shields.io/badge/tRPC-11-398CCB?style=for-the-badge" alt="tRPC" /></a>
+  <a href="https://getstream.io/video/"><img src="https://img.shields.io/badge/Stream_Video-SDK-0052CC?style=for-the-badge" alt="Stream Video" /></a>
+  <a href="https://ai.google.dev/"><img src="https://img.shields.io/badge/Gemini-AI-4285F4?style=for-the-badge&logo=google" alt="Gemini" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License" /></a>
+</p>
 
-## Features
+<p align="center">
+  Create custom AI agents. Join HD video calls. Get instant summaries. 🔥
+</p>
 
-- **AI Agents** — Create agents with custom instructions (interview coach, tutor, sales assistant, etc.)
-- **Video Meetings** — HD video calls powered by [Stream Video](https://getstream.io/video/)
-- **In-call AI Assistant** — Text or voice questions answered by Gemini during the call
-- **Auto Transcription & Recording** — Enabled automatically when a meeting starts
-- **AI Meeting Summary** — Gemini generates a structured markdown summary after each call
-- **Post-meeting Dashboard** — Summary, transcript, recording, and Ask AI tabs
-- **Authentication** — Email/password, Google, and GitHub via [Better Auth](https://www.better-auth.com/)
-
----
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|------------|
-| Framework | [Next.js 15](https://nextjs.org/) (App Router) |
-| Language | TypeScript |
-| Styling | Tailwind CSS 4, Radix UI |
-| API | [tRPC](https://trpc.io/) |
-| Database | [Neon](https://neon.tech/) PostgreSQL + [Drizzle ORM](https://orm.drizzle.team/) |
-| Auth | [Better Auth](https://www.better-auth.com/) |
-| Video | [Stream Video SDK](https://getstream.io/video/) |
-| AI | [Google Gemini](https://ai.google.dev/) (`gemini-2.0-flash-lite` with fallbacks) |
-| Background Jobs | [Inngest](https://www.inngest.com/) |
-| Deployment | [Vercel](https://vercel.com/) |
+<p align="center">
+  <a href="https://nexora-ai-1qwb.vercel.app"><strong>🚀 Live Demo</strong></a>
+</p>
 
 ---
 
-## How It Works
-
-```mermaid
-flowchart TD
-    A[User creates meeting + agent] --> B[Stream Video call starts]
-    B --> C[AI agent joins via Gemini tRPC]
-    C --> D[User talks / asks questions]
-    D --> E[Call ends → status: processing]
-    E --> F[Stream webhook: transcription_ready]
-    F --> G[Gemini generates summary]
-    G --> H[Meeting status: completed]
-    H --> I[Summary · Transcript · Recording · Ask AI]
-```
+| Sign In | Dashboard | AI Agent Call |
+|:---:|:---:|:---:|
+| <img src="public/feature/loginsignup.png" alt="Sign In" width="280" /> | <img src="public/feature/dashboardpage.png" alt="Dashboard" width="280" /> | <img src="public/feature/Agentcallpage.png" alt="AI Agent Call" width="280" /> |
 
 ---
 
-## Getting Started
+## ✨ Features That Slap
+
+### 🤖 Custom AI Agents
+
+| | |
+|---|---|
+| 🧠 | Create agents with custom instructions |
+| 🎯 | Interview coach, tutor, sales assistant & more |
+| ⚡ | Agents join your live video calls |
+
+### 📹 HD Video Meetings
+
+| | |
+|---|---|
+| 🎥 | Crystal-clear video powered by Stream |
+| 🎙️ | Auto transcription & recording |
+| 👥 | Real-time collaboration |
+
+### 💬 In-Call AI Assistant
+
+| | |
+|---|---|
+| 🗣️ | Ask questions by **voice** or **text** |
+| ⚡ | Gemini replies in seconds |
+| 🧩 | Context-aware answers during the call |
+
+### 📊 Post-Meeting Intelligence
+
+| | |
+|---|---|
+| 📝 | AI-generated markdown summaries |
+| 📜 | Full meeting transcripts |
+| 🎬 | Recording playback |
+| 💡 | Ask AI about past meetings |
+
+### 🔐 Authentication
+
+| | |
+|---|---|
+| ✉️ | Email & password |
+| 🔵 | Google sign-in |
+| ⚫ | GitHub sign-in |
+
+---
+
+## 📱 Screenshots
+
+| Create Agent | Create Meeting | Join Call |
+|:---:|:---:|:---:|
+| <img src="public/feature/Agentpage.png" alt="Create Agent" width="280" /> | <img src="public/feature/Meetingpage.png" alt="Create Meeting" width="280" /> | <img src="public/feature/joinmeetingpage.png" alt="Join Meeting" width="280" /> |
+
+| Meeting Summary |
+|:---:|
+| <img src="public/feature/MeetingSummarypage.png" alt="Meeting Summary" width="400" /> |
+
+---
+
+## 🎬 Demo
+
+https://github.com/coder-Yash886/Meet-Ai/raw/main/meetai/public/demo/nexora-ai-demo-final.mp4
+
+**Watch Nexora AI in action!** Sign in → create agent → start meeting → talk to AI → get auto summary. 🚀
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Purpose |
+|------------|---------|
+| [Next.js 15](https://nextjs.org/) | App framework (App Router) |
+| [TypeScript](https://www.typescriptlang.org/) | Type-safe development |
+| [Tailwind CSS 4](https://tailwindcss.com/) | Styling |
+| [tRPC](https://trpc.io/) | End-to-end typesafe API |
+| [Drizzle ORM](https://orm.drizzle.team/) | Database ORM |
+| [Neon PostgreSQL](https://neon.tech/) | Serverless database |
+| [Better Auth](https://www.better-auth.com/) | Authentication |
+| [Stream Video SDK](https://getstream.io/video/) | HD video calls |
+| [Google Gemini](https://ai.google.dev/) | AI agent & summaries |
+| [Inngest](https://www.inngest.com/) | Background jobs |
+| [Vercel](https://vercel.com/) | Deployment |
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
 - Node.js 20+
 - npm
-- Accounts: [Neon](https://neon.tech), [Stream](https://getstream.io), [Google AI Studio](https://aistudio.google.com), [Inngest](https://www.inngest.com) (optional for local dev)
+- Accounts: [Neon](https://neon.tech), [Stream](https://getstream.io), [Google AI Studio](https://aistudio.google.com)
 
-### 1. Clone & install
+### Installation
 
 ```bash
+# Clone the repo
 git clone https://github.com/coder-Yash886/Meet-Ai.git
-cd .
+cd Meet-Ai/meetai
+
+# Install dependencies
 npm install
+
+# Push database schema
+npm run db:push
+
+# Start dev server
+npm run dev
 ```
 
-### 2. Environment variables
+Open [http://localhost:3000](http://localhost:3000) → redirects to `/meetings`.
 
-Create a `.env` file in the project root:
+### Environment Variables
+
+Create a `.env` file in the `meetai` folder:
 
 ```env
-# Database
 DATABASE_URL=postgresql://...
-
-# Auth
 BETTER_AUTH_SECRET=your-random-secret
 BETTER_AUTH_URL=http://localhost:3000
 NEXT_PUBLIC_APP_URL=http://localhost:3000
-
-# OAuth
 GITHUB_CLIENT_ID=
 GITHUB_CLIENT_SECRET=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
-
-# Stream Video
 NEXT_PUBLIC_STREAM_VIDEO_API_KEY=
 STREAM_VIDEO_SECRET_KEY=
-
-# Gemini AI
 GEMINI_API_KEY=
-
-# Inngest (optional for local)
-INNGEST_SIGNING_KEY=
 ```
 
-### 3. Database setup
+**Full local flow** (summaries + webhooks):
 
 ```bash
-npm run db:push
-```
-
-### 4. Run locally
-
-**Minimal (app only):**
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) — redirects to `/meetings`.
-
-**Full flow (summary + webhooks):**
-
-```bash
-# Terminal 1
-npm run dev
-
-# Terminal 2 — expose webhooks to Stream
-npm run dev:webhook
-
-# Terminal 3 — Inngest dev server (optional)
-npm run dev:inngest
+npm run dev          # Terminal 1
+npm run dev:webhook  # Terminal 2 — ngrok for Stream webhooks
+npm run dev:inngest  # Terminal 3 — optional
 ```
 
 ---
 
-## Project Structure
+## 🏗️ Architecture
 
 ```
-src/
-├── app/
-│   ├── (auth)/              # Sign-in, sign-up, dashboard
+meetai/
+├── 📱 src/app/
+│   ├── (auth)/              # Sign-in, dashboard
 │   │   └── (dashboard)/
 │   │       ├── meetings/    # Meeting list & detail
 │   │       └── agents/      # Agent management
 │   ├── call/[meetingId]/    # Live video call UI
-│   └── api/
-│       ├── auth/            # Better Auth routes
-│       ├── trpc/            # tRPC handler
-│       ├── webhook/         # Stream Video webhooks
-│       └── inngest/         # Inngest functions
-├── modules/
+│   └── api/                 # Auth, tRPC, webhooks, Inngest
+├── 🧠 src/modules/
 │   ├── agents/              # Agent CRUD & UI
 │   ├── meetings/            # Meetings, summary, transcript
-│   ├── call/                # Video call components
-│   ├── auth/                # Login / signup views
-│   └── dashboard/           # Sidebar & navbar
-├── db/                      # Drizzle schema
-├── inngest/                 # Background job definitions
-└── lib/                     # Auth, Gemini, Stream helpers
+│   ├── call/                # Video call + AI agent UI
+│   └── auth/                # Login / signup views
+├── 📦 src/db/               # Drizzle schema
+├── ⚙️ src/lib/              # Auth, Gemini, Stream helpers
+├── 🎬 public/demo/          # Demo video
+└── 📸 public/feature/       # App screenshots
 ```
 
 ---
 
-## Key Routes
+## 🗺️ Key Routes
 
 | Route | Description |
 |-------|-------------|
-| `/meetings` | Meeting list (default landing page) |
-| `/meetings/[id]` | Meeting detail — upcoming, active, processing, or completed |
+| `/meetings` | Meeting list (default landing) |
+| `/meetings/[id]` | Meeting detail & summary |
 | `/agents` | Manage AI agents |
-| `/call/[meetingId]` | Live video call with AI agent |
+| `/call/[meetingId]` | Live video call with AI |
 | `/sign-in` | Authentication |
 
 ---
 
-## Deployment (Vercel)
+## ☁️ Deploy on Vercel
 
-### 1. Push to GitHub
-
-```bash
-git push origin main
-```
-
-### 2. Import on Vercel
-
-- Framework: **Next.js**
-- Build command: `npm run build`
-- Install command: `npm install`
-
-### 3. Environment variables
-
-Set all `.env` variables in Vercel → **Settings → Environment Variables** for **Production**:
-
-```env
-BETTER_AUTH_URL=https://your-app.vercel.app
-NEXT_PUBLIC_APP_URL=https://your-app.vercel.app
-# ... all other vars from .env
-```
-
-Redeploy after adding env vars.
-
-### 4. OAuth redirect URIs
-
-**Google Cloud Console** → Authorized redirect URIs:
-
-```
-https://your-app.vercel.app/api/auth/callback/google
-```
-
-**GitHub OAuth App** → Authorization callback URL:
-
-```
-https://your-app.vercel.app/api/auth/callback/github
-```
-
-### 5. Stream Video webhook
-
-[Stream Dashboard](https://dashboard.getstream.io) → **Video & Audio** → Webhooks:
-
-```
-https://your-app.vercel.app/api/webhook
-```
-
-Enable events: `call.session_ended`, `call.transcription_ready`, `call.recording_ready`
-
-### 6. Inngest (recommended for production)
-
-[Inngest Dashboard](https://app.inngest.com) → Create app `meet-ai-2` → Sync:
-
-```
-https://your-app.vercel.app/api/inngest
-```
-
-Add `INNGEST_SIGNING_KEY` to Vercel env and redeploy.
-
-### 7. Verify OAuth
-
-After deploy, open:
-
-```
-https://your-app.vercel.app/api/auth/debug
-```
-
-Confirm `googleRedirectURI` matches Google Console exactly.
+1. Push to GitHub and import on [Vercel](https://vercel.com)
+2. Set all `.env` variables (use production URLs for `BETTER_AUTH_URL` & `NEXT_PUBLIC_APP_URL`)
+3. Add OAuth redirect URIs for Google & GitHub
+4. Configure [Stream webhook](https://dashboard.getstream.io): `https://your-app.vercel.app/api/webhook`
+5. Sync [Inngest](https://app.inngest.com): `https://your-app.vercel.app/api/inngest`
 
 ---
 
-## Scripts
+## 📜 Scripts
 
 | Command | Description |
 |---------|-------------|
 | `npm run dev` | Start dev server |
 | `npm run build` | Production build |
-| `npm run start` | Start production server |
-| `npm run lint` | ESLint |
 | `npm run db:push` | Push schema to Neon |
 | `npm run db:studio` | Open Drizzle Studio |
-| `npm run dev:webhook` | ngrok tunnel for Stream webhooks |
+| `npm run dev:webhook` | ngrok tunnel for webhooks |
 | `npm run dev:inngest` | Inngest local dev server |
 
 ---
 
-## Meeting Lifecycle
+## 🤝 Contributing
 
-| Status | Description |
-|--------|-------------|
-| `upcoming` | Created, not started |
-| `active` | Call in progress |
-| `processing` | Call ended, summary generating |
-| `completed` | Summary, transcript & recording ready |
-| `cancelled` | Meeting cancelled |
+Contributions make open source amazing! Any PRs are welcome.
 
----
-
-## Troubleshooting
-
-| Issue | Fix |
-|-------|-----|
-| Google `redirect_uri_mismatch` | Match `BETTER_AUTH_URL` with Google Console redirect URI exactly |
-| Summary stuck on processing | Check Stream webhook + `GEMINI_API_KEY`; visit processing page to trigger retry |
-| Gemini quota exceeded | Wait 1 min or use a new key from [AI Studio](https://aistudio.google.com/apikey) |
-| Agent not replying | Verify `GEMINI_API_KEY` is set (`AIzaSy...` format) |
-| Webhook 401 | Check `STREAM_VIDEO_SECRET_KEY` on Vercel |
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ---
 
-## Author
+## 📄 License
 
-**Yash Kumar** — [GitHub](https://github.com/coder-Yash886)
+Distributed under the **MIT License**. See `LICENSE` for more information.
 
 ---
 
-## License
+## 💖 Acknowledgments
 
-MIT
+- Video powered by [Stream](https://getstream.io/)
+- AI powered by [Google Gemini](https://ai.google.dev/)
+- Built with ❤️ and way too much ☕
+
+---
+
+<p align="center">
+  <strong>⭐ Star this repo if you found it useful!</strong>
+</p>
+
+<p align="center">
+  Made with 💪 by <a href="https://github.com/coder-Yash886">Yash Kumar</a>
+</p>
