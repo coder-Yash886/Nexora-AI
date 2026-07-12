@@ -29,9 +29,7 @@
 
 Experience Nexora AI in action:
 
-<p align="center">
-  <img src="docs/assets/demo.gif" alt="Nexora AI demo — sign in, create agent, join call, AI summary" width="720" />
-</p>
+https://github.com/coder-Yash886/Nexora-AI/releases/download/demo-assets/nexora-ai-demo-final.mp4
 
 ---
 
