@@ -2,7 +2,7 @@
 "use client"
 
 import { GeneratedAvatar } from "@/components/generated-avtar"
-import { cn } from "@/lib/utils"
+import { cn, formatDuration } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { MeetingGetMany } from "../../types"
 import { ColumnDef } from "@tanstack/react-table"
@@ -16,17 +16,6 @@ import {
  } from "lucide-react"
 
 import {format} from "date-fns"
-import humanizeDuration from "humanize-duration"
-
-
-function formatDuration(seconds: number){
-    return humanizeDuration(seconds * 1000,{
-        largest: 1,
-        round: true,
-        units: ["h","m","s"],
-
-    })
-}
 
 const statusIconMap ={
     upcoming: ClockArrowUpIcon,
