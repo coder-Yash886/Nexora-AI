@@ -25,6 +25,12 @@
   <a href="https://nexora-ai-1qwb.vercel.app"><strong>🚀 Live Demo</strong></a>
 </p>
 
+## 🎥 Demo Video
+
+Experience Nexora AI in action:
+
+public/demo/nexora-ai-demo-final.mp4
+
 ---
 
 | Sign In | Dashboard | AI Agent Call |
@@ -87,14 +93,6 @@
 | Meeting Summary |
 |:---:|
 | <img src="public/feature/MeetingSummarypage.png" alt="Meeting Summary" width="400" /> |
-
----
-
-## 🎬 Demo
-
-https://github.com/coder-Yash886/Meet-Ai/raw/main/meetai/public/demo/nexora-ai-demo-final.mp4
-
-**Watch Nexora AI in action!** Sign in → create agent → start meeting → talk to AI → get auto summary. 🚀
 
 ---
 
