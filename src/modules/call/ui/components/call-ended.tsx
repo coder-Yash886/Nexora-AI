@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { LoadingState } from "@/components/loading-state";
+import { trpc } from "@/trpc/client";
 
 interface Props {
   meetingId: string;
@@ -13,11 +14,21 @@ interface Props {
 
 export const CallEnded = ({ meetingId }: Props) => {
   const router = useRouter();
+  const utils = trpc.useUtils();
   const [isGenerating, setIsGenerating] = useState(false);
+  const updateStatus = trpc.meetings.updateStatus.useMutation();
 
-  const handleViewSummary = () => {
+  const handleViewSummary = async () => {
     setIsGenerating(true);
-    router.push(`/meetings/${meetingId}`);
+
+    try {
+      await updateStatus.mutateAsync({ id: meetingId, status: "processing" });
+      await utils.meetings.getOne.invalidate({ id: meetingId });
+    } catch (error) {
+      console.error("Failed to start summary generation:", error);
+    }
+
+    router.push(`/meetings/${meetingId}?generating=1`);
   };
 
   if (isGenerating) {

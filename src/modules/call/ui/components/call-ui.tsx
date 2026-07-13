@@ -36,7 +36,7 @@ export const CallUI = ({
     try {
       await call.join({ create: true });
       await call.microphone.enable();
-      updateStatus.mutate({ id: meetingId, status: "active" });
+      await updateStatus.mutateAsync({ id: meetingId, status: "active" });
       setShow("call");
     } catch (error: unknown) {
       console.error("Failed to join call:", error);
@@ -48,12 +48,12 @@ export const CallUI = ({
     }
   };
 
-  const handleLeave = () => {
+  const handleLeave = async () => {
     if (!call) return;
 
     try {
       call.endCall();
-      updateStatus.mutate({ id: meetingId, status: "processing" });
+      await updateStatus.mutateAsync({ id: meetingId, status: "processing" });
       setShow("ended");
     } catch (error: unknown) {
       console.error("Failed to leave/end call:", error);

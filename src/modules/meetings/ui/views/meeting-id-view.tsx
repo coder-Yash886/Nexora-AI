@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 import { trpc } from "@/trpc/client";
@@ -22,20 +22,35 @@ interface Props {
 
 export const MeetingIdView = ({ meetingId }: Props) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const utils = trpc.useUtils();
   const [updateMeetingDialogOpen, setUpdateMeetingDialogOpen] = useState(false);
 
   const [data] = trpc.meetings.getOne.useSuspenseQuery({ id: meetingId });
 
+  const isGeneratingFromCall = searchParams.get("generating") === "1";
+  const isProcessing = data.status === "processing";
+  const isCompleted = data.status === "completed";
+  const isCancelled = data.status === "cancelled";
+  const isActive = data.status === "active";
+  const isUpcoming = data.status === "upcoming";
+  const showProcessing =
+    isProcessing || (isGeneratingFromCall && !isCompleted && !isCancelled);
+
   useEffect(() => {
-    if (data.status !== "processing") return;
+    if (!showProcessing) return;
 
     const interval = setInterval(() => {
       void utils.meetings.getOne.invalidate({ id: meetingId });
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [data.status, meetingId, utils]);
+  }, [showProcessing, meetingId, utils]);
+
+  useEffect(() => {
+    if (!isCompleted || !isGeneratingFromCall) return;
+    router.replace(`/meetings/${meetingId}`);
+  }, [isCompleted, isGeneratingFromCall, meetingId, router]);
 
   const removeMeeting = trpc.meetings.remove.useMutation({
     onSuccess: async () => {
@@ -58,12 +73,6 @@ export const MeetingIdView = ({ meetingId }: Props) => {
     removeMeeting.mutate({ id: meetingId });
   };
 
-  const isActive = data.status === "active";
-  const isCompleted = data.status === "completed";
-  const isUpcoming = data.status === "upcoming";
-  const isCancelled = data.status === "cancelled";
-  const isProcessing = data.status === "processing";
-
   return (
     <>
       <RemoveConfirmation />
@@ -83,9 +92,11 @@ export const MeetingIdView = ({ meetingId }: Props) => {
         />
         {isCancelled && <CancelledState />}
         {isCompleted && <CompletedState data={data} />}
-        {isActive && <ActiveState meetingId={meetingId} />}
-        {isUpcoming && <UpcomingState meetingId={meetingId} />}
-        {isProcessing && <ProcessingState meetingId={meetingId} />}
+        {showProcessing && <ProcessingState meetingId={meetingId} />}
+        {!showProcessing && isActive && <ActiveState meetingId={meetingId} />}
+        {!showProcessing && isUpcoming && (
+          <UpcomingState meetingId={meetingId} />
+        )}
       </div>
     </>
   );
