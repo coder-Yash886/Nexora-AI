@@ -40,8 +40,19 @@ const secondSection = [
         label: "Upgrade",
         href: "/meetings",
     },
-
 ]
+
+const isNavActive = (href: string, pathname: string) => {
+    if (href === "/meetings") {
+        return pathname === "/meetings" || pathname.startsWith("/meetings/");
+    }
+
+    if (href === "/agents") {
+        return pathname === "/agents" || pathname.startsWith("/agents/");
+    }
+
+    return pathname === href;
+};
 
 export const DashboardSidebar = () => {
 
@@ -64,13 +75,13 @@ export const DashboardSidebar = () => {
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {firstSection.map((item) => (
-                                <SidebarMenuItem key={item.href}>
+                                <SidebarMenuItem key={item.label}>
                                     <SidebarMenuButton
                                         asChild
                                         className={cn(
-                                            "h-10 hover:bg-linear-to-r/oklch border border-transparent hover:border-[#5D6B68]/10 from-sidebar-accent from-5% via-30% via-sidebar/50 to-sidebar/50", pathName === item.href && "bg-liner-to-r/okclh border-[5D6B68]/10"
+                                            "h-10 hover:bg-linear-to-r/oklch border border-transparent hover:border-[#5D6B68]/10 from-sidebar-accent from-5% via-30% via-sidebar/50 to-sidebar/50", isNavActive(item.href, pathName) && "bg-liner-to-r/okclh border-[5D6B68]/10"
                                         )}
-                                        isActive={pathName === item.href}
+                                        isActive={isNavActive(item.href, pathName)}
                                     >
                                         <Link href={item.href}>
                                             <item.icon className="size-5" />
@@ -90,13 +101,11 @@ export const DashboardSidebar = () => {
                         <SidebarGroupContent>
                             <SidebarMenu>
                                 {secondSection.map((item) => (
-                                    <SidebarMenuItem key={item.href}>
+                                    <SidebarMenuItem key={item.label}>
                                         <SidebarMenuButton
                                             asChild
-                                            className={cn(
-                                                "h-10 hover:bg-linear-to-r/oklch border border-transparent hover:border-[#5D6B68]/10 from-sidebar-accent from-5% via-30% via-sidebar/50 to-sidebar/50", pathName === item.href && "bg-liner-to-r/okclh border-[5D6B68]/10"
-                                            )}
-                                            isActive={pathName === item.href}
+                                            className="h-10 hover:bg-linear-to-r/oklch border border-transparent hover:border-[#5D6B68]/10 from-sidebar-accent from-5% via-30% via-sidebar/50 to-sidebar/50"
+                                            isActive={false}
                                         >
                                             <Link href={item.href}>
                                                 <item.icon className="size-5" />
