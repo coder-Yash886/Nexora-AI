@@ -29,7 +29,7 @@
 
 Experience Nexora AI in action:
 
-https://github.com/coder-Yash886/Meet-Ai/raw/main/public/demo/nexora-ai-demo-final.mp4
+https://github.com/user-attachments/assets/6fdecc74-1e8a-41c5-9bf1-5cf42e0c68d9
 
 ---
 
