@@ -260,5 +260,12 @@ Distributed under the **MIT License**. See `LICENSE` for more information.
 
 <p align="center">
   Made with 💪 by <a href="https://github.com/coder-Yash886">Yash Kumar</a>
-  Twi
+</p>
+
+<p align="center">
+  Twitter: <a href="https://x.com/YashK47662">@YashK47662</a>
+</p>
+
+<p align="center">
+  <a href="mailto:yashkumar.967565@gmail.com">yashkumar.967565@gmail.com</a>
 </p>
