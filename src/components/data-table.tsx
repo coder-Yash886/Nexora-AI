@@ -32,9 +32,9 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div className="overflow-hidden rounded-lg border w-full">  {/* ← added w-full */}
-      <Table className="w-full">  {/* ← added w-full */}
-        <TableHeader>  {/* ← was missing */}
+    <div className="overflow-x-auto rounded-lg border w-full max-w-full">
+      <Table className="w-full min-w-[560px]">
+        <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (

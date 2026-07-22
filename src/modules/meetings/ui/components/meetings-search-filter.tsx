@@ -8,10 +8,10 @@ export const MeetingsSearchFilter =() => {
     const [filters,setFilters] = useMeetingsFilters();
 
     return(
-        <div className="relative">
+        <div className="relative w-full md:w-auto">
             <Input 
                 placeholder="Filter by name"
-                className="h-9 w-[160px] shrink-0 bg-white pl-8 shadow-xs"
+                className="h-9 w-full md:w-[160px] shrink-0 bg-white pl-8 shadow-xs"
                 value={filters.search}
                 onChange={(e) => setFilters({ search: e.target.value, page: DEFAULT_PAGE })}
             />

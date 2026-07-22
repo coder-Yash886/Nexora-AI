@@ -5,7 +5,7 @@ interface Props{
 
 const Layout = ({children}: Props) => {
     return(
-        <div className="h-screen bg-black">
+        <div className="h-screen w-full min-w-0 overflow-x-hidden bg-black">
             {children}
         </div>
     )

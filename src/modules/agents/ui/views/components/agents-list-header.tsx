@@ -23,19 +23,19 @@ export const AgentsListHeader = () => {
     return (
         <>
         <NewAgentDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}/>
-        <div className="py-4 px-4 md:px-8 flex flex-col gap-y-4">
-            <div className="flex items-center justify-between">
-                    <h5 className="font-medium text-xl">My Agents</h5>
-                    <Button onClick={() => setIsDialogOpen(true)}>
+        <div className="py-4 px-4 md:px-8 flex flex-col gap-y-4 min-w-0">
+            <div className="flex items-center justify-between gap-3">
+                    <h5 className="font-medium text-xl truncate">My Agents</h5>
+                    <Button onClick={() => setIsDialogOpen(true)} className="shrink-0">
                         <PlusIcon />
                         New Agent
                     </Button>
             </div>
-            <div className="flex items-center gap-x-2 p-1">
+            <div className="flex flex-col gap-2 w-full min-w-0 sm:flex-row sm:items-center">
                 <AgentsSearchFilter
                 />
                 {isAnyFilterModified && (
-                    <Button variant="outline" size="sm" onClick={onClearFilter}>
+                    <Button variant="outline" size="sm" onClick={onClearFilter} className="w-full sm:w-auto">
                         <XCircle
                          />
                         Clear

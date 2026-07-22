@@ -32,20 +32,27 @@ export const MeetingsListHeader = () => {
     return (
         <>
         <NewMeetingDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}/>
-        <div className="py-4 px-4 md:px-8 flex flex-col gap-y-4">
-            <div className="flex items-center justify-between">
-                    <h5 className="font-medium text-xl">My Meetings</h5>
-                    <Button onClick={() => setIsDialogOpen(true)}>
+        <div className="py-4 px-4 md:px-8 flex flex-col gap-y-4 min-w-0 w-full max-w-full">
+            <div className="flex items-center justify-between gap-3">
+                    <h5 className="font-medium text-xl truncate">My Meetings</h5>
+                    <Button onClick={() => setIsDialogOpen(true)} className="shrink-0">
                         <PlusIcon />
                         New Meeting
                     </Button>                  
             </div>
-            <div className="flex items-center gap-2">
-                <MeetingsSearchFilter/>
-                <StatusFilter/>
-                <AgentIdFilter/>
+            {/* Mobile: stack filters. Desktop: row */}
+            <div className="grid grid-cols-1 gap-2 w-full min-w-0 md:flex md:flex-wrap md:items-center">
+                <div className="w-full md:w-auto min-w-0">
+                  <MeetingsSearchFilter/>
+                </div>
+                <div className="w-full md:w-auto min-w-0">
+                  <StatusFilter/>
+                </div>
+                <div className="w-full md:w-auto min-w-0">
+                  <AgentIdFilter/>
+                </div>
                 {isAnyFilterModified && (
-              <Button variant="outline" onClick={onClearFilters}>
+              <Button variant="outline" onClick={onClearFilters} className="w-full md:w-auto shrink-0">
                 <XCircleIcon className="size-4" />
                 Clear
               </Button>

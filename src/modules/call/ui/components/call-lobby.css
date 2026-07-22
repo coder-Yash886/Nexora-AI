@@ -1,0 +1,39 @@
+/* Loaded after @stream-io/video-react-sdk styles — override fixed 500px preview */
+
+.lobby-video-preview,
+.lobby-video-preview * {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.lobby-video-preview .str-video__video-preview-container,
+.str-video__video-preview-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  height: auto !important;
+  aspect-ratio: 4 / 3 !important;
+}
+
+.lobby-video-preview .str-video__video-preview-container .str-video__video-preview,
+.str-video__video-preview-container .str-video__video-preview {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+.lobby-video-preview .str-video__video-placeholder,
+.lobby-video-preview .str-video__video-placeholder__message,
+.lobby-video-preview p,
+.str-video__video-preview-container .str-video__video-placeholder,
+.str-video__video-preview-container .str-video__video-placeholder__message,
+.str-video__video-preview-container p {
+  max-width: 100% !important;
+  width: 100% !important;
+  padding-inline: 0.75rem !important;
+  text-align: center !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+  white-space: normal !important;
+}
