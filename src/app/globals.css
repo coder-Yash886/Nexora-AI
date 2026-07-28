@@ -144,3 +144,12 @@
     transform: translateY(-12px);
   }
 }
+
+@keyframes landing-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}

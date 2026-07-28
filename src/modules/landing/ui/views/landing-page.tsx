@@ -7,16 +7,19 @@ import {
   Bot,
   FileText,
   Menu,
+  Play,
   Sparkles,
   Video,
   X,
   Zap,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { DEMO_VIDEO_SRC } from "@/constants";
 
 const navLinks = [
+  { href: "#demo", label: "Demo" },
   { href: "#features", label: "Features" },
   { href: "#showcase", label: "Product" },
   { href: "#how-it-works", label: "How it works" },
@@ -47,6 +50,15 @@ const features = [
     description:
       "Automatic markdown summaries, full transcripts, and AI chat over past meetings after every call.",
   },
+];
+
+const galleryImages = [
+  { src: "/feature/sign-in.png", alt: "Sign in to Nexora AI", label: "Sign In" },
+  { src: "/feature/meetings-dashboard.png", alt: "Meetings dashboard", label: "Meetings" },
+  { src: "/feature/agents-page.png", alt: "Create AI agents", label: "Agents" },
+  { src: "/feature/agent-call.png", alt: "Live AI agent call", label: "Live Call" },
+  { src: "/feature/meeting-summary.png", alt: "Meeting summary", label: "Summary" },
+  { src: "/feature/ask-ai.png", alt: "Ask AI about meetings", label: "Ask AI" },
 ];
 
 const steps = [
@@ -86,12 +98,55 @@ function useInView(threshold = 0.15) {
   return { ref: setRef, visible };
 }
 
+function FeatureGallery() {
+  const slides = [...galleryImages, ...galleryImages];
+
+  return (
+    <div className="relative overflow-hidden">
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-[#0a0a0a] to-transparent sm:w-24" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-[#0a0a0a] to-transparent sm:w-24" />
+      <div className="flex w-max animate-[landing-marquee_40s_linear_infinite] gap-5 hover:[animation-play-state:paused]">
+        {slides.map((item, index) => (
+          <figure
+            key={`${item.src}-${index}`}
+            className="group w-[260px] shrink-0 sm:w-[300px] md:w-[340px]"
+          >
+            <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-2xl transition-transform duration-300 group-hover:scale-[1.02]">
+              <Image
+                src={item.src}
+                alt={item.alt}
+                width={680}
+                height={420}
+                className="h-auto w-full object-cover"
+              />
+            </div>
+            <figcaption className="mt-3 text-center text-xs font-medium uppercase tracking-[0.2em] text-white/50">
+              {item.label}
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function LandingPage() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [videoPlaying, setVideoPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const hero = useInView();
+  const demoSection = useInView();
   const featuresSection = useInView();
   const showcase = useInView();
   const stepsSection = useInView();
+
+  const playDemo = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.scrollIntoView({ behavior: "smooth", block: "center" });
+    void video.play();
+    setVideoPlaying(true);
+  };
 
   return (
     <div className="relative min-h-svh overflow-x-hidden bg-[#fafbfc] text-foreground">
@@ -212,8 +267,13 @@ export function LandingPage() {
                     <ArrowRight className="size-4" />
                   </Link>
                 </Button>
-                <Button size="lg" variant="outline" className="h-12 px-8 text-base" asChild>
-                  <a href="#showcase">See it in action</a>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="h-12 px-8 text-base"
+                  onClick={playDemo}
+                >
+                  Watch demo
                 </Button>
               </div>
 
@@ -227,8 +287,8 @@ export function LandingPage() {
             <div className="relative mx-auto w-full max-w-xl lg:max-w-none">
               <div className="relative animate-[landing-float_6s_ease-in-out_infinite] rounded-2xl border border-black/5 bg-white p-3 shadow-2xl shadow-primary/10">
                 <Image
-                  src="/feature/dashboardpage.png"
-                  alt="Nexora AI dashboard"
+                  src="/feature/meetings-dashboard.png"
+                  alt="Nexora AI meetings dashboard"
                   width={960}
                   height={600}
                   className="rounded-xl"
@@ -237,12 +297,73 @@ export function LandingPage() {
               </div>
               <div className="absolute -bottom-8 -left-4 hidden w-48 animate-[landing-float_7s_ease-in-out_infinite_1s] rounded-xl border border-black/5 bg-white p-2 shadow-xl sm:block">
                 <Image
-                  src="/feature/Agentcallpage.png"
+                  src="/feature/agent-call.png"
                   alt="AI agent in call"
                   width={320}
                   height={200}
                   className="rounded-lg"
                 />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="demo" className="px-4 py-20 sm:px-6">
+          <div
+            ref={demoSection.ref}
+            className={cn(
+              "mx-auto max-w-6xl transition-all duration-1000",
+              demoSection.visible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+            )}
+          >
+            <h2 className="text-center text-3xl font-bold tracking-tight drop-shadow-sm sm:text-4xl lg:text-5xl">
+              See How Nexora AI Transforms Your Meetings
+            </h2>
+
+            <div className="relative mx-auto mt-10 max-w-5xl overflow-hidden rounded-3xl border border-black/10 bg-[#d9d9d9] shadow-2xl">
+              <video
+                ref={videoRef}
+                className="aspect-video w-full bg-black object-cover"
+                controls
+                playsInline
+                preload="metadata"
+                poster="/feature/meetings-dashboard.png"
+                onPlay={() => setVideoPlaying(true)}
+                onPause={() => setVideoPlaying(false)}
+              >
+                <source src={DEMO_VIDEO_SRC} type="video/mp4" />
+              </video>
+
+              {!videoPlaying && (
+                <button
+                  type="button"
+                  onClick={playDemo}
+                  className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/20 text-white transition-colors hover:bg-black/30"
+                  aria-label="Play demo video"
+                >
+                  <span className="flex size-16 items-center justify-center rounded-full bg-primary shadow-lg">
+                    <Play className="size-7 fill-white text-white" />
+                  </span>
+                  <span className="text-sm font-medium sm:text-base">
+                    Click &quot;Watch Demo&quot; to play video
+                  </span>
+                </button>
+              )}
+            </div>
+
+            <div className="mt-8 flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
+              <p className="max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+                Take a quick tour of how teams connect, collaborate, and create with custom
+                AI agents inside Nexora AI.
+              </p>
+              <div className="flex w-full shrink-0 flex-col gap-3 sm:w-auto sm:flex-row">
+                <Button size="lg" className="h-12 px-8" onClick={playDemo}>
+                  <Play className="size-4 fill-current" />
+                  Watch Demo
+                </Button>
+                <Button size="lg" variant="outline" className="h-12 px-8" asChild>
+                  <Link href="/sign-up">Get Started</Link>
+                </Button>
               </div>
             </div>
           </div>
@@ -286,42 +407,28 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section id="showcase" className="px-4 py-20 sm:px-6">
+        <section id="showcase" className="bg-[#0a0a0a] py-20">
           <div
             ref={showcase.ref}
             className={cn(
-              "mx-auto max-w-6xl transition-all duration-1000",
+              "transition-all duration-1000",
               showcase.visible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
             )}
           >
-            <div className="overflow-hidden rounded-3xl border border-black/5 bg-white shadow-xl">
-              <div className="grid lg:grid-cols-2">
-                <div className="flex flex-col justify-center p-8 sm:p-12">
-                  <p className="mb-3 text-sm font-medium uppercase tracking-wider text-primary">
-                    Built for teams
-                  </p>
-                  <h2 className="text-3xl font-bold tracking-tight">
-                    Agents that join your calls and work alongside you
-                  </h2>
-                  <p className="mt-4 text-muted-foreground">
-                    Configure specialized agents, invite them into live meetings, and let AI
-                    handle follow-ups while you stay present in the conversation.
-                  </p>
-                  <Button className="mt-8 w-fit" asChild>
-                    <Link href="/sign-up">Create your first agent</Link>
-                  </Button>
-                </div>
-                <div className="bg-gradient-to-br from-primary/5 to-emerald-50 p-6 sm:p-8">
-                  <Image
-                    src="/feature/MeetingSummarypage.png"
-                    alt="Meeting summary"
-                    width={720}
-                    height={480}
-                    className="rounded-2xl border border-black/5 shadow-lg"
-                  />
-                </div>
-              </div>
+            <div className="mx-auto mb-10 max-w-6xl px-4 sm:px-6">
+              <p className="text-xs font-medium uppercase tracking-[0.35em] text-white/40">
+                Product Gallery
+              </p>
+              <h2 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                Explore every part of Nexora AI
+              </h2>
+              <p className="mt-3 max-w-2xl text-white/55">
+                Sign in, manage meetings, create agents, join live calls, and review AI
+                summaries—all in one platform.
+              </p>
             </div>
+
+            <FeatureGallery />
           </div>
         </section>
 
