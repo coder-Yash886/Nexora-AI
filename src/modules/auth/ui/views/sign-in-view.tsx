@@ -28,7 +28,11 @@ const formSchema = z.object({
     password: z.string().min(6, { message: "Password must be at least 6 characters long" })
 });
 
-export const SignInView = () => {
+interface SignInViewProps {
+    callbackURL?: string;
+}
+
+export const SignInView = ({ callbackURL = "/meetings" }: SignInViewProps) => {
 
     const router = useRouter();
     const [error, setError] = useState<string | null>(null);
@@ -51,13 +55,13 @@ export const SignInView = () => {
             {
                 email: data.email,
                 password: data.password,
-                callbackURL: "/"
+                callbackURL,
 
             },
             {
                 onSuccess: () => {
                     setPending(false);
-                    router.push("/");
+                    router.push(callbackURL);
                 },
 
                 onError: ({ error }) => {
@@ -76,7 +80,7 @@ export const SignInView = () => {
         authClient.signIn.social(
             {
                 provider: provider,
-                callbackURL: "/"
+                callbackURL,
             },
             {
                 onSuccess: () => {

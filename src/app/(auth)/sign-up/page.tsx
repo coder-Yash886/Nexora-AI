@@ -3,19 +3,24 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 
-const Page = async () => {
+interface Props {
+  searchParams: Promise<{ callbackURL?: string }>;
+}
+
+const Page = async ({ searchParams }: Props) => {
+  const { callbackURL } = await searchParams;
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
   if (session) {
-    redirect("/meetings");
+    redirect(callbackURL ?? "/meetings");
   }
 
   return (
     <div className="bg-muted flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm md:max-w-3xl">
-        <SignUpView />
+        <SignUpView callbackURL={callbackURL ?? "/meetings"} />
       </div>
     </div>
   );

@@ -35,7 +35,11 @@ const formSchema = z.object({
         path: ["confirmPassword"],
     })
 
-export const SignUpView = () => {
+interface SignUpViewProps {
+    callbackURL?: string;
+}
+
+export const SignUpView = ({ callbackURL = "/meetings" }: SignUpViewProps) => {
 
     const router = useRouter();
     const [error, setError] = useState<string | null>(null);
@@ -61,13 +65,13 @@ export const SignUpView = () => {
                 name: data.name,
                 email: data.email,
                 password: data.password,
-                callbackURL: "/"
+                callbackURL,
 
             },
             {
                 onSuccess: () => {
                     setPending(false);
-                    router.push("/")
+                    router.push(callbackURL)
                 },
 
                 onError: ({ error }) => {
@@ -86,7 +90,7 @@ export const SignUpView = () => {
         authClient.signIn.social(
             {
                 provider: provider,
-                callbackURL: "/"
+                callbackURL,
             },
             {
                 onSuccess: () => {

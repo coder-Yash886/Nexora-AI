@@ -12,17 +12,22 @@ import {
   Video,
   X,
   Zap,
+  Mail,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { DEMO_VIDEO_SRC } from "@/constants";
+import { DEMO_VIDEO_SRC, CONTACT_EMAIL, SOCIAL_LINKS } from "@/constants";
+import { ContactSection } from "@/modules/landing/ui/components/contact-section";
+import { FaGithub, FaLinkedinIn } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 
 const navLinks = [
   { href: "#demo", label: "Demo" },
   { href: "#features", label: "Features" },
   { href: "#showcase", label: "Product" },
   { href: "#how-it-works", label: "How it works" },
+  { href: "#contact", label: "Contact" },
 ];
 
 const features = [
@@ -105,13 +110,13 @@ function FeatureGallery() {
     <div className="relative overflow-hidden">
       <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-[#0a0a0a] to-transparent sm:w-24" />
       <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-[#0a0a0a] to-transparent sm:w-24" />
-      <div className="flex w-max animate-[landing-marquee_40s_linear_infinite] gap-5 hover:[animation-play-state:paused]">
+      <div className="flex w-max animate-[landing-marquee_45s_linear_infinite] gap-5 hover:[animation-play-state:paused]">
         {slides.map((item, index) => (
           <figure
             key={`${item.src}-${index}`}
-            className="group w-[260px] shrink-0 sm:w-[300px] md:w-[340px]"
+            className="w-[260px] shrink-0 sm:w-[300px] md:w-[340px]"
           >
-            <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-2xl transition-transform duration-300 group-hover:scale-[1.02]">
+            <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-2xl">
               <Image
                 src={item.src}
                 alt={item.alt}
@@ -284,24 +289,15 @@ export function LandingPage() {
               </div>
             </div>
 
-            <div className="relative mx-auto w-full max-w-xl lg:max-w-none">
-              <div className="relative animate-[landing-float_6s_ease-in-out_infinite] rounded-2xl border border-black/5 bg-white p-3 shadow-2xl shadow-primary/10">
+            <div className="mx-auto w-full max-w-xl lg:max-w-none">
+              <div className="overflow-hidden rounded-2xl border border-black/8 bg-white shadow-lg">
                 <Image
-                  src="/feature/meetings-dashboard.png"
+                  src="/feature/hero-meetings-dashboard.png"
                   alt="Nexora AI meetings dashboard"
                   width={960}
                   height={600}
-                  className="rounded-xl"
+                  className="w-full"
                   priority
-                />
-              </div>
-              <div className="absolute -bottom-8 -left-4 hidden w-48 animate-[landing-float_7s_ease-in-out_infinite_1s] rounded-xl border border-black/5 bg-white p-2 shadow-xl sm:block">
-                <Image
-                  src="/feature/agent-call.png"
-                  alt="AI agent in call"
-                  width={320}
-                  height={200}
-                  className="rounded-lg"
                 />
               </div>
             </div>
@@ -327,7 +323,7 @@ export function LandingPage() {
                 controls
                 playsInline
                 preload="metadata"
-                poster="/feature/meetings-dashboard.png"
+                poster="/feature/hero-meetings-dashboard.png"
                 onPlay={() => setVideoPlaying(true)}
                 onPause={() => setVideoPlaying(false)}
               >
@@ -464,6 +460,8 @@ export function LandingPage() {
           </div>
         </section>
 
+        <ContactSection />
+
         <section className="px-4 pb-24 sm:px-6">
           <div className="mx-auto max-w-6xl overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-emerald-600 px-8 py-14 text-center text-white shadow-2xl shadow-primary/25 sm:px-12">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
@@ -496,11 +494,49 @@ export function LandingPage() {
       </main>
 
       <footer className="border-t border-black/5 bg-white px-4 py-10 sm:px-6">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 sm:flex-row">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 sm:flex-row">
           <div className="flex items-center gap-2">
             <Image src="/logo.svg" alt="Nexora AI" width={24} height={24} />
             <span className="text-sm font-medium">Nexora AI</span>
           </div>
+
+          <div className="flex items-center gap-4">
+            <a
+              href={SOCIAL_LINKS.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub"
+              className="text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <FaGithub className="size-5" />
+            </a>
+            <a
+              href={SOCIAL_LINKS.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+              className="text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <FaLinkedinIn className="size-5" />
+            </a>
+            <a
+              href={SOCIAL_LINKS.twitter}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="X (Twitter)"
+              className="text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <FaXTwitter className="size-5" />
+            </a>
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              aria-label="Email"
+              className="text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <Mail className="size-5" />
+            </a>
+          </div>
+
           <p className="text-sm text-muted-foreground">
             AI-powered video meetings with custom agents, transcripts, and summaries.
           </p>
