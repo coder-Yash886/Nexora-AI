@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
-import { Mail, Send } from "lucide-react";
+import { Mail, Send, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { CONTACT_EMAIL, SOCIAL_LINKS } from "@/constants";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
+import { useTRPC } from "@/trpc/client";
 
 const socialItems = [
   {
@@ -41,11 +42,13 @@ interface ContactSectionProps {
 }
 
 export function ContactSection({ className }: ContactSectionProps) {
+  const trpc = useTRPC();
+  const sendMutation = trpc.contact.send.useMutation();
   const { data: session, isPending } = authClient.useSession();
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!session?.user) return;
 
     if (!message.trim()) {
@@ -53,16 +56,18 @@ export function ContactSection({ className }: ContactSectionProps) {
       return;
     }
 
-    const mailSubject = subject.trim() || "Message from Nexora AI user";
-    const body = [
-      `Name: ${session.user.name ?? "Nexora AI user"}`,
-      `Email: ${session.user.email ?? "Not provided"}`,
-      "",
-      message.trim(),
-    ].join("\n");
-
-    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(body)}`;
-    toast.success("Opening your email app to send the message.");
+    try {
+      await sendMutation.mutateAsync({
+        subject: subject.trim() || undefined,
+        message: message.trim(),
+      });
+      toast.success("Your message has been sent successfully!");
+      setSubject("");
+      setMessage("");
+    } catch (error) {
+      console.error("Failed to send contact message:", error);
+      toast.error("Failed to send message. Please try again.");
+    }
   };
 
   return (
@@ -154,9 +159,17 @@ export function ContactSection({ className }: ContactSectionProps) {
                   />
                 </div>
 
-                <Button className="w-full sm:w-auto" onClick={handleSend}>
-                  <Send className="size-4" />
-                  Send message
+                <Button
+                  className="w-full sm:w-auto"
+                  onClick={handleSend}
+                  disabled={sendMutation.isPending}
+                >
+                  {sendMutation.isPending ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <Send className="size-4" />
+                  )}
+                  {sendMutation.isPending ? "Sending..." : "Send message"}
                 </Button>
               </div>
             ) : (

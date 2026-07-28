@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { StreamTheme, useCall } from "@stream-io/video-react-sdk";
+import { CallingState, StreamTheme, useCall } from "@stream-io/video-react-sdk";
 import { toast } from "sonner";
 
 import { useTRPC } from "@/trpc/client";
@@ -29,22 +29,38 @@ export const CallUI = ({
   const updateStatus = trpc.meetings.updateStatus.useMutation();
   const call = useCall();
   const [show, setShow] = useState<"lobby" | "call" | "ended">("lobby");
+  const [isJoining, setIsJoining] = useState(false);
 
   const handleJoin = async () => {
-    if (!call) return;
+    if (!call || isJoining) return;
+    setIsJoining(true);
 
     try {
-      await call.join({ create: true });
+      if (call.state.callingState !== CallingState.JOINED && call.state.callingState !== CallingState.JOINING) {
+        await call.join({ create: true });
+      }
       await call.microphone.enable();
       await updateStatus.mutateAsync({ id: meetingId, status: "active" });
       setShow("call");
     } catch (error: unknown) {
       console.error("Failed to join call:", error);
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Failed to join the call. Please try again.";
-      toast.error(message);
+      const message = error instanceof Error ? error.message : "";
+      if (
+        message.includes("call.join() shall be called only once") ||
+        call.state.callingState === CallingState.JOINED
+      ) {
+        try {
+          await call.microphone.enable();
+          await updateStatus.mutateAsync({ id: meetingId, status: "active" });
+        } catch (e) {
+          console.error("Error setting up active call state:", e);
+        }
+        setShow("call");
+      } else {
+        toast.error(message || "Failed to join the call. Please try again.");
+      }
+    } finally {
+      setIsJoining(false);
     }
   };
 
@@ -63,7 +79,7 @@ export const CallUI = ({
 
   return (
     <StreamTheme className="h-full">
-      {show === "lobby" && <CallLobby onJoin={handleJoin} />}
+      {show === "lobby" && <CallLobby onJoin={handleJoin} isJoining={isJoining} />}
       {show === "call" && (
         <CallActive
           onLeave={handleLeave}
@@ -77,5 +93,5 @@ export const CallUI = ({
       )}
       {show === "ended" && <CallEnded meetingId={meetingId} />}
     </StreamTheme>
-  )
+  );
 };

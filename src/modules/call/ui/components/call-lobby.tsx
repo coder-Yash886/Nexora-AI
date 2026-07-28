@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LogInIcon } from "lucide-react";
+import { Loader2Icon, LogInIcon } from "lucide-react";
 import {
   DefaultVideoPlaceholder,
   StreamVideoParticipant,
@@ -18,6 +18,7 @@ import "./call-lobby.css";
 
 interface Props {
   onJoin: () => void;
+  isJoining?: boolean;
 }
 
 const DisabledVideoPreview = () => {
@@ -48,7 +49,7 @@ const AllowBrowserPermissions = () => {
   );
 };
 
-export const CallLobby = ({ onJoin }: Props) => {
+export const CallLobby = ({ onJoin, isJoining }: Props) => {
   const { useCameraState, useMicrophoneState } = useCallStateHooks();
 
   const { hasBrowserPermission: hasMicPermission } = useMicrophoneState();
@@ -86,9 +87,13 @@ export const CallLobby = ({ onJoin }: Props) => {
             <Button asChild variant="ghost" className="w-full sm:w-auto">
               <Link href="/meetings">Cancel</Link>
             </Button>
-            <Button onClick={onJoin} className="w-full sm:w-auto">
-              <LogInIcon />
-              Join Call
+            <Button onClick={onJoin} disabled={isJoining} className="w-full sm:w-auto">
+              {isJoining ? (
+                <Loader2Icon className="size-4 animate-spin" />
+              ) : (
+                <LogInIcon />
+              )}
+              {isJoining ? "Joining..." : "Join Call"}
             </Button>
           </div>
         </div>
