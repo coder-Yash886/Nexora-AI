@@ -4,10 +4,10 @@ import { GoogleGenAI } from "@google/genai";
 import { TRPCError } from "@trpc/server";
 
 const GEMINI_MODELS = [
-  "gemini-2.0-flash-lite",
   "gemini-2.5-flash-lite",
   "gemini-2.5-flash",
-  "gemini-2.0-flash",
+  "gemini-3.5-flash-lite",
+  "gemini-3.6-flash",
 ] as const;
 
 type GenerateContentInput = Parameters<
@@ -34,8 +34,12 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
+}
+
 function isQuotaError(error: unknown) {
-  const message = error instanceof Error ? error.message : String(error);
+  const message = getErrorMessage(error);
   return (
     message.includes("429") ||
     message.includes("RESOURCE_EXHAUSTED") ||
@@ -43,8 +47,18 @@ function isQuotaError(error: unknown) {
   );
 }
 
+function isModelUnavailableError(error: unknown) {
+  const message = getErrorMessage(error);
+  return (
+    message.includes("404") ||
+    message.includes("NOT_FOUND") ||
+    message.toLowerCase().includes("no longer available") ||
+    message.toLowerCase().includes("is not found")
+  );
+}
+
 function toGeminiTRPCError(error: unknown): TRPCError {
-  const message = error instanceof Error ? error.message : "Gemini request failed";
+  const message = getErrorMessage(error) || "Gemini request failed";
 
   if (isQuotaError(error)) {
     return new TRPCError({
@@ -96,6 +110,10 @@ export async function generateGeminiText(
             await sleep(2500);
             continue;
           }
+          break;
+        }
+
+        if (isModelUnavailableError(error)) {
           break;
         }
 
