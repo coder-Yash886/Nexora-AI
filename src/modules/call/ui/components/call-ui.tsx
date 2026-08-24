@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { StreamTheme, useCall } from "@stream-io/video-react-sdk";
 import { toast } from "sonner";
 
@@ -29,13 +29,17 @@ export const CallUI = ({
   const updateStatus = trpc.meetings.updateStatus.useMutation();
   const call = useCall();
   const [show, setShow] = useState<"lobby" | "call" | "ended">("lobby");
+  const [isJoining, setIsJoining] = useState(false);
+  const hasJoined = useRef(false);
 
   const handleJoin = async () => {
-    if (!call) return;
+    if (!call || isJoining || hasJoined.current) return;
+
+    setIsJoining(true);
+    hasJoined.current = true;
 
     try {
       await call.join({ create: true });
-      await call.microphone.enable();
       await updateStatus.mutateAsync({ id: meetingId, status: "active" });
       setShow("call");
     } catch (error: unknown) {
@@ -45,6 +49,9 @@ export const CallUI = ({
           ? error.message
           : "Failed to join the call. Please try again.";
       toast.error(message);
+      // Reset so user can retry
+      hasJoined.current = false;
+      setIsJoining(false);
     }
   };
 
@@ -63,7 +70,7 @@ export const CallUI = ({
 
   return (
     <StreamTheme className="h-full">
-      {show === "lobby" && <CallLobby onJoin={handleJoin} />}
+      {show === "lobby" && <CallLobby onJoin={handleJoin} isJoining={isJoining} />}
       {show === "call" && (
         <CallActive
           onLeave={handleLeave}

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { LogInIcon } from "lucide-react";
+import { LogInIcon, LoaderIcon } from "lucide-react";
+import { useEffect } from "react";
 import {
   DefaultVideoPlaceholder,
   StreamVideoParticipant,
@@ -18,6 +19,7 @@ import "./call-lobby.css";
 
 interface Props {
   onJoin: () => void;
+  isJoining?: boolean;
 }
 
 const DisabledVideoPreview = () => {
@@ -48,13 +50,26 @@ const AllowBrowserPermissions = () => {
   );
 };
 
-export const CallLobby = ({ onJoin }: Props) => {
+export const CallLobby = ({ onJoin, isJoining = false }: Props) => {
   const { useCameraState, useMicrophoneState } = useCallStateHooks();
 
   const { hasBrowserPermission: hasMicPermission } = useMicrophoneState();
   const { hasBrowserPermission: hasCameraPermission } = useCameraState();
 
   const hasBrowserMediaPermission = hasCameraPermission && hasMicPermission;
+
+  // Proactively request mic + camera permission so toggles work
+  useEffect(() => {
+    navigator.mediaDevices
+      .getUserMedia({ audio: true, video: true })
+      .then((stream) => {
+        // Stop all tracks immediately — we just needed the permission prompt
+        stream.getTracks().forEach((t) => t.stop());
+      })
+      .catch(() => {
+        // User denied or device unavailable — handled by AllowBrowserPermissions
+      });
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center h-full w-full max-w-[100vw] min-w-0 overflow-x-hidden bg-radial from-sidebar-accent to-sidebar">
@@ -86,9 +101,17 @@ export const CallLobby = ({ onJoin }: Props) => {
             <Button asChild variant="ghost" className="w-full sm:w-auto">
               <Link href="/meetings">Cancel</Link>
             </Button>
-            <Button onClick={onJoin} className="w-full sm:w-auto">
-              <LogInIcon />
-              Join Call
+            <Button
+              onClick={onJoin}
+              disabled={isJoining}
+              className="w-full sm:w-auto"
+            >
+              {isJoining ? (
+                <LoaderIcon className="animate-spin" />
+              ) : (
+                <LogInIcon />
+              )}
+              {isJoining ? "Joining..." : "Join Call"}
             </Button>
           </div>
         </div>
