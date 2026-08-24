@@ -8,24 +8,46 @@ import {
   BookOpenTextIcon,
   FileVideoIcon,
   ClockFadingIcon,
+  RefreshCwIcon,
+  AlertCircleIcon,
 } from "lucide-react";
 import { format } from "date-fns";
+import { toast } from "sonner";
 
 import { GeneratedAvatar } from "@/components/generated-avtar";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 
 import { MeetingGetOne } from "../../types";
 import { Badge } from "@/components/ui/badge";
 import { formatDuration } from "@/lib/utils";
 import { Transcript } from "@/modules/meetings/ui/components/transcript";
 import { ChatProvider } from "@/modules/meetings/ui/components/chat-provider";
+import { useTRPC } from "@/trpc/client";
 
 interface Props {
   data: MeetingGetOne;
 }
 
 export const CompletedState = ({ data }: Props) => {
+  const trpc = useTRPC();
+  const utils = trpc.useUtils();
+
+  const generateSummary = trpc.meetings.generateSummary.useMutation({
+    onSuccess: async () => {
+      toast.success("Summary generated! Refreshing...");
+      await utils.meetings.getOne.invalidate({ id: data.id });
+    },
+    onError: (err) => {
+      toast.error(err.message || "Failed to generate summary. Try again in a minute.");
+    },
+  });
+
+  const handleRetrySummary = () => {
+    generateSummary.mutate({ id: data.id });
+  };
+
   return (
     <div className="flex flex-col gap-y-4">
       <Tabs defaultValue="summary">
@@ -79,9 +101,26 @@ export const CompletedState = ({ data }: Props) => {
                 controls
               />
             ) : (
-              <p className="text-sm text-muted-foreground py-8 text-center">
-                Recording is not available yet.
-              </p>
+              <div className="flex flex-col items-center gap-3 py-10 text-center">
+                <AlertCircleIcon className="size-8 text-muted-foreground/50" />
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Recording not available yet
+                  </p>
+                  <p className="text-xs text-muted-foreground/70 mt-1">
+                    Stream takes 3–5 minutes to process the recording after the call ends.
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-2 gap-2"
+                  onClick={() => utils.meetings.getOne.invalidate({ id: data.id })}
+                >
+                  <RefreshCwIcon className="size-3.5" />
+                  Check again
+                </Button>
+              </div>
             )}
           </div>
         </TabsContent>
@@ -163,9 +202,27 @@ export const CompletedState = ({ data }: Props) => {
                   {data.summary}
                 </Markdown>
                 ) : (
-                  <p className="text-sm text-muted-foreground">
-                    Summary is not available yet.
-                  </p>
+                  <div className="flex flex-col items-center gap-3 py-8 text-center">
+                    <AlertCircleIcon className="size-8 text-muted-foreground/50" />
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Summary not generated yet
+                      </p>
+                      <p className="text-xs text-muted-foreground/70 mt-1">
+                        The transcript may still be processing. Click below to try generating the summary now.
+                      </p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="mt-2 gap-2"
+                      disabled={generateSummary.isPending}
+                      onClick={handleRetrySummary}
+                    >
+                      <RefreshCwIcon className={`size-3.5 ${generateSummary.isPending ? "animate-spin" : ""}`} />
+                      {generateSummary.isPending ? "Generating..." : "Generate Summary"}
+                    </Button>
+                  </div>
                 )}
               </div>
             </div>
