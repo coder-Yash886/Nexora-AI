@@ -40,6 +40,7 @@ export const CallUI = ({
 
     try {
       await call.join({ create: true });
+      await call.microphone.enable();
       await updateStatus.mutateAsync({ id: meetingId, status: "active" });
       setShow("call");
     } catch (error: unknown) {
