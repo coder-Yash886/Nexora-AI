@@ -62,8 +62,6 @@ export const CallConnect = ({
       if (!client) return;
 
       const _call = client.call("default", meetingId);
-      _call.camera.disable();
-      _call.microphone.disable();
       setCall(_call);
 
       return () => {

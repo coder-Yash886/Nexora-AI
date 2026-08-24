@@ -6,6 +6,7 @@ import {
   StreamVideoParticipant,
   ToggleAudioPreviewButton,
   ToggleVideoPreviewButton,
+  useCall,
   useCallStateHooks,
   VideoPreview,
 } from "@stream-io/video-react-sdk";
@@ -51,6 +52,7 @@ const AllowBrowserPermissions = () => {
 };
 
 export const CallLobby = ({ onJoin, isJoining = false }: Props) => {
+  const call = useCall();
   const { useCameraState, useMicrophoneState } = useCallStateHooks();
 
   const { hasBrowserPermission: hasMicPermission } = useMicrophoneState();
@@ -58,18 +60,28 @@ export const CallLobby = ({ onJoin, isJoining = false }: Props) => {
 
   const hasBrowserMediaPermission = hasCameraPermission && hasMicPermission;
 
-  // Proactively request mic + camera permission so toggles work
+  // Request permissions via Stream SDK so the browser prompt appears
+  // and the ToggleAudioPreviewButton works correctly.
   useEffect(() => {
-    navigator.mediaDevices
-      .getUserMedia({ audio: true, video: true })
-      .then((stream) => {
-        // Stop all tracks immediately — we just needed the permission prompt
-        stream.getTracks().forEach((t) => t.stop());
-      })
-      .catch(() => {
-        // User denied or device unavailable — handled by AllowBrowserPermissions
-      });
-  }, []);
+    if (!call) return;
+
+    // Enable briefly to trigger the browser permission dialog,
+    // then disable so the user starts muted/camera-off in the lobby.
+    const requestPermissions = async () => {
+      try {
+        await call.microphone.enable();
+        await call.camera.enable();
+        // Now disable both — user can toggle from the lobby controls
+        await call.microphone.disable();
+        await call.camera.disable();
+      } catch {
+        // Permission denied — AllowBrowserPermissions message will show
+      }
+    };
+
+    requestPermissions();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [call?.id]);
 
   return (
     <div className="flex flex-col items-center justify-center h-full w-full max-w-[100vw] min-w-0 overflow-x-hidden bg-radial from-sidebar-accent to-sidebar">
