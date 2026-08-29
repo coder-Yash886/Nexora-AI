@@ -1,0 +1,16 @@
+node_modules
+.next
+.git
+.gitignore
+*.md
+.env
+.env.*
+!.env.example
+.vercel
+.tools
+coverage
+npm-debug.log*
+webhook-debug.log
+drizzle
+docker-compose*.yml
+.github
